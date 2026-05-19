@@ -4,6 +4,7 @@ struct ProfileView: View {
     @EnvironmentObject var statsManager: StatsManager
     @EnvironmentObject var ruleManager: RuleManager
     @AppStorage("isDarkMode") private var isDarkMode = true
+    @AppStorage("isNotificationsEnabled") private var isNotificationsEnabled = false
     @AppStorage("username") private var username = "ReverseKing"
     @State private var showEditName = false
 
@@ -110,6 +111,24 @@ struct ProfileView: View {
                                 SettingsRow(icon: "moon.fill", title: "Dark Mode", color: .purple) {
                                     Toggle("", isOn: $isDarkMode)
                                         .labelsHidden()
+                                }
+
+                                Divider().background(Color.white.opacity(0.1))
+
+                                SettingsRow(icon: "bell.fill", title: "Daily Reminder", color: .yellow) {
+                                    Toggle("", isOn: $isNotificationsEnabled)
+                                        .labelsHidden()
+                                        .onChange(of: isNotificationsEnabled) { _, newValue in
+                                            if newValue {
+                                                ReverseNotificationService.shared.requestAuthorization { granted in
+                                                    if granted {
+                                                        ReverseNotificationService.shared.scheduleDailyRuleReminder()
+                                                    }
+                                                }
+                                            } else {
+                                                ReverseNotificationService.shared.cancelNotification(identifier: "daily_rule")
+                                            }
+                                        }
                                 }
 
                                 Divider().background(Color.white.opacity(0.1))
