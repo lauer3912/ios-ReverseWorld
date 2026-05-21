@@ -1,0 +1,62 @@
+name: ReverseWorld
+options:
+  bundleIdPrefix: com.ggsheng
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    MARKETING_VERSION: "3.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: "9L6N2ZF26B"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+
+targets:
+  ReverseWorld:
+    type: application
+    platform: iOS
+    sources:
+      - path: ReverseWorld
+    resources:
+      - path: ReverseWorld/Assets.xcassets
+    settings:
+      base:
+        INFOPLIST_FILE: ReverseWorld/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.ReverseWorld
+        CODE_SIGN_ENTITLEMENTS: ReverseWorld/ReverseWorld.entitlements
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+    entitlements:
+      path: ReverseWorld/ReverseWorld.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+
+  ReverseWorldTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: ReverseWorldTests
+    dependencies:
+      - target: ReverseWorld
+    settings:
+      base:
+        INFOPLIST_FILE: ReverseWorldTests/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.ReverseWorldTests
+        GENERATE_INFOPLIST_FILE: YES
+
+  ReverseWorldUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: ReverseWorldUITests
+    dependencies:
+      - target: ReverseWorld
+    settings:
+      base:
+        INFOPLIST_FILE: ReverseWorldUITests/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.ggsheng.ReverseWorldUITests
+        GENERATE_INFOPLIST_FILE: YES
