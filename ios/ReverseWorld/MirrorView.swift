@@ -4,6 +4,7 @@ import AVFoundation
 struct MirrorView: View {
     @State private var isMirrored = true
     @State private var showCaptureEffect = false
+    @StateObject private var camera = CameraController()
 
     var body: some View {
         NavigationStack {
@@ -14,38 +15,60 @@ struct MirrorView: View {
                 VStack(spacing: 24) {
                     // Mirror Frame
                     ZStack {
-                        // Simulated mirror view (in real app, this would be camera)
-                        RoundedRectangle(cornerRadius: 200)
-                            .fill(
-                                LinearGradient(
-                                    colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.3)],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
+                        // Real camera preview (or placeholder if no access)
+                        if camera.isAuthorized {
+                            CameraPreview(camera: camera)
+                                .clipShape(RoundedRectangle(cornerRadius: 200))
+                                .frame(width: 280, height: 380)
+                                .scaleEffect(x: isMirrored ? -1 : 1, y: 1)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 200)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [.yellow, .orange],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 8
+                                        )
                                 )
-                            )
-                            .frame(width: 280, height: 380)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 200)
-                                    .stroke(
-                                        LinearGradient(
-                                            colors: [.yellow, .orange],
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        ),
-                                        lineWidth: 8
+                        } else {
+                            RoundedRectangle(cornerRadius: 200)
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.3)],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
                                     )
-                            )
-
-                        // Placeholder text
-                        VStack {
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 80))
-                                .foregroundColor(.white.opacity(0.3))
-                            Text("Camera Preview")
-                                .font(.caption)
-                                .foregroundColor(.white.opacity(0.5))
+                                )
+                                .frame(width: 280, height: 380)
+                                .overlay(
+                                    VStack {
+                                        Image(systemName: "camera.fill")
+                                            .font(.system(size: 60))
+                                            .foregroundColor(.white.opacity(0.3))
+                                        Text(camera.error ?? "Tap to enable camera")
+                                            .font(.caption)
+                                            .foregroundColor(.white.opacity(0.5))
+                                            .multilineTextAlignment(.center)
+                                            .padding(.horizontal)
+                                    }
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 200)
+                                        .stroke(
+                                            LinearGradient(
+                                                colors: [.yellow, .orange],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            ),
+                                            lineWidth: 8
+                                        )
+                                )
+                                .onTapGesture {
+                                    camera.checkAuthorization()
+                                }
                         }
-                        .scaleEffect(isMirrored ? -1 : 1)
 
                         // Capture flash effect
                         if showCaptureEffect {
@@ -87,9 +110,11 @@ struct MirrorView: View {
                                     .frame(width: 56, height: 56)
                             }
                         }
+                        .disabled(!camera.isAuthorized)
 
                         Button {
                             // Switch camera
+                            camera.flipCamera()
                         } label: {
                             VStack {
                                 Image(systemName: "camera.rotate.fill")
@@ -136,6 +161,7 @@ struct MirrorView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
             showCaptureEffect = false
         }
+        camera.capturePhoto()
     }
 }
 

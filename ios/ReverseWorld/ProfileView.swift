@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct ProfileView: View {
     @EnvironmentObject var statsManager: StatsManager
@@ -98,6 +99,9 @@ struct ProfileView: View {
                             }
                             .padding(.horizontal)
                         }
+
+                        // Premium Section
+                        PremiumSection()
 
                         // Settings Section
                         VStack(alignment: .leading, spacing: 12) {
@@ -353,6 +357,268 @@ struct AboutView: View {
         }
         .navigationTitle("About")
         .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+// MARK: - Premium Section
+
+struct PremiumSection: View {
+    @StateObject private var premiumManager = PremiumManager.shared
+    @State private var showPaywall = false
+    @State private var purchaseError: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("PREMIUM")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.yellow)
+                if premiumManager.isPremium {
+                    Text("· ACTIVE")
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(.green)
+                }
+                Spacer()
+            }
+            .padding(.horizontal)
+
+            Button {
+                if !premiumManager.isPremium {
+                    showPaywall = true
+                }
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: premiumManager.isPremium ? "checkmark.seal.fill" : "crown.fill")
+                        .font(.title2)
+                        .foregroundStyle(LinearGradient(colors: [.yellow, .orange], startPoint: .leading, endPoint: .trailing))
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(premiumManager.isPremium ? "Premium Active" : "Unlock Premium")
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        Text(premiumManager.isPremium ? "All filters, ad-free, unlimited entries" : "Get 7-day free trial")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    Spacer()
+                    if !premiumManager.isPremium {
+                        Image(systemName: "chevron.right")
+                            .foregroundColor(.white.opacity(0.4))
+                    }
+                }
+                .padding()
+                .background(
+                    LinearGradient(colors: premiumManager.isPremium ?
+                        [Color(hex: "1a0a2e"), Color(hex: "0a0a1a")] :
+                        [Color(hex: "3d2a6e"), Color(hex: "1a0a2e")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(LinearGradient(colors: [.yellow.opacity(0.5), .orange.opacity(0.5)], startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                )
+            }
+            .padding(.horizontal)
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView(isPresented: $showPaywall)
+                .environmentObject(premiumManager)
+        }
+    }
+}
+
+struct PaywallView: View {
+    @EnvironmentObject var premiumManager: PremiumManager
+    @Binding var isPresented: Bool
+    @State private var purchasing = false
+    @State private var purchaseError: String?
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color(hex: "0a0a1a").ignoresSafeArea()
+
+                VStack(spacing: 24) {
+                    // Header
+                    VStack(spacing: 8) {
+                        Image(systemName: "crown.fill")
+                            .font(.system(size: 60))
+                            .foregroundStyle(LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        Text("Unlock Premium")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.white)
+                        Text("Get 7-day free trial, then \(premiumManager.displayPrice)/month")
+                            .font(.subheadline)
+                            .foregroundColor(.white.opacity(0.7))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                    }
+                    .padding(.top, 40)
+
+                    // Features
+                    VStack(alignment: .leading, spacing: 12) {
+                        PremiumFeatureRow(icon: "camera.viewfinder", title: "All mirror filters unlocked")
+                        PremiumFeatureRow(icon: "text.bubble.fill", title: "All reverse translator modes")
+                        PremiumFeatureRow(icon: "scroll.fill", title: "Unlimited reverse journal entries")
+                        PremiumFeatureRow(icon: "bell.fill", title: "Priority rule updates")
+                        PremiumFeatureRow(icon: "xmark.circle.fill", title: "Ad-free experience")
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 16)
+
+                    Spacer()
+
+                    // Purchase buttons
+                    VStack(spacing: 12) {
+                        if let yearly = premiumManager.yearlyProduct {
+                            PurchaseButton(
+                                title: "Yearly",
+                                subtitle: "Best value • \(premiumManager.yearlyDisplayPrice)/year",
+                                product: yearly,
+                                isPopular: true,
+                                purchasing: $purchasing,
+                                onPurchase: { purchase(product: yearly) }
+                            )
+                        } else {
+                            PurchaseButton(
+                                title: "Yearly",
+                                subtitle: "Best value • $29.99/year",
+                                product: nil,
+                                isPopular: true,
+                                purchasing: $purchasing,
+                                onPurchase: nil
+                            )
+                        }
+
+                        if let monthly = premiumManager.monthlyProduct {
+                            PurchaseButton(
+                                title: "Monthly",
+                                subtitle: premiumManager.displayPrice + "/month",
+                                product: monthly,
+                                isPopular: false,
+                                purchasing: $purchasing,
+                                onPurchase: { purchase(product: monthly) }
+                            )
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    Button {
+                        Task {
+                            await premiumManager.restorePurchases()
+                            isPresented = premiumManager.isPremium
+                        }
+                    } label: {
+                        Text("Restore Purchases")
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.6))
+                    }
+                    .padding(.bottom)
+
+                    if let error = purchaseError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                }
+            }
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Close") { isPresented = false }
+                        .foregroundColor(.white)
+                }
+            }
+        }
+    }
+
+    private func purchase(product: Product) {
+        purchasing = true
+        purchaseError = nil
+        Task {
+            do {
+                let success = try await premiumManager.purchase(product)
+                if success {
+                    isPresented = false
+                } else {
+                    purchaseError = "Purchase cancelled"
+                }
+            } catch {
+                purchaseError = error.localizedDescription
+            }
+            purchasing = false
+        }
+    }
+}
+
+struct PremiumFeatureRow: View {
+    let icon: String
+    let title: String
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .foregroundColor(.yellow)
+                .frame(width: 24)
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.white)
+            Spacer()
+        }
+    }
+}
+
+struct PurchaseButton: View {
+    let title: String
+    let subtitle: String
+    let product: Product?
+    let isPopular: Bool
+    @Binding var purchasing: Bool
+    let onPurchase: (() -> Void)?
+
+    var body: some View {
+        Button {
+            onPurchase?()
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack {
+                        Text(title)
+                            .font(.headline)
+                            .foregroundColor(.white)
+                        if isPopular {
+                            Text("POPULAR")
+                                .font(.caption2)
+                                .fontWeight(.bold)
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(Color.yellow)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    Text(subtitle)
+                        .font(.caption)
+                        .foregroundColor(.white.opacity(0.7))
+                }
+                Spacer()
+                if purchasing {
+                    ProgressView().tint(.white)
+                } else {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.white.opacity(0.6))
+                }
+            }
+            .padding()
+            .background(
+                LinearGradient(colors: isPopular ?
+                    [Color.yellow, Color.orange] :
+                    [Color(hex: "1a0a2e"), Color(hex: "0a0a1a")], startPoint: .leading, endPoint: .trailing)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
     }
 }
 

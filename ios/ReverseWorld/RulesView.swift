@@ -165,8 +165,7 @@ struct RulesView: View {
 
     func completeRule() {
         withAnimation(.spring()) {
-            ruleManager.ruleHistory.append(ruleManager.currentRule)
-            ruleManager.refreshRule()
+            ruleManager.completeCurrentRule()
         }
     }
 }

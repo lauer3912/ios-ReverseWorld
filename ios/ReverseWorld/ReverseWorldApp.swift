@@ -6,6 +6,13 @@ struct ReverseWorldApp: App {
     @StateObject private var statsManager = StatsManager()
     @AppStorage("isDarkMode") private var isDarkMode = true
 
+    // Honor -forceDarkMode launch arg for XCUITest screenshot generation
+    init() {
+        if CommandLine.arguments.contains("-forceDarkMode") {
+            UserDefaults.standard.set(true, forKey: "isDarkMode")
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -27,7 +34,11 @@ class RuleManager: ObservableObject {
         ReverseRule(title: "Use your non-dominant hand", description: "Switch hands for all tasks today."),
         ReverseRule(title: "Reverse your daily routine", description: "Do everything in opposite order today."),
         ReverseRule(title: "Think opposite", description: "For every thought, consider the reverse."),
+        ReverseRule(title: "Write with your eyes closed", description: "Let your hand write without seeing."),
+        ReverseRule(title: "Speak in questions only", description: "Only ask questions, never make statements."),
     ]
+
+    private let historyKey = "ruleHistory"
 
     init() {
         currentRule = rules.randomElement() ?? rules[0]
@@ -38,16 +49,45 @@ class RuleManager: ObservableObject {
         currentRule = rules.randomElement() ?? rules[0]
     }
 
+    func completeCurrentRule() {
+        let newRule = ReverseRule(
+            title: currentRule.title,
+            description: currentRule.description,
+            isCompleted: true
+        )
+        if !ruleHistory.contains(where: { $0.id == currentRule.id }) {
+            ruleHistory.append(newRule)
+            saveHistory()
+        }
+        refreshRule()
+    }
+
     private func loadHistory() {
-        // Load from UserDefaults
+        if let data = UserDefaults.standard.data(forKey: historyKey),
+           let decoded = try? JSONDecoder().decode([ReverseRule].self, from: data) {
+            ruleHistory = decoded
+        }
+    }
+
+    private func saveHistory() {
+        if let data = try? JSONEncoder().encode(ruleHistory) {
+            UserDefaults.standard.set(data, forKey: historyKey)
+        }
     }
 }
 
-struct ReverseRule: Identifiable {
-    let id = UUID()
+struct ReverseRule: Identifiable, Codable {
+    let id: UUID
     let title: String
     let description: String
-    var isCompleted = false
+    var isCompleted: Bool
+
+    init(id: UUID = UUID(), title: String, description: String, isCompleted: Bool = false) {
+        self.id = id
+        self.title = title
+        self.description = description
+        self.isCompleted = isCompleted
+    }
 }
 
 class StatsManager: ObservableObject {
@@ -69,18 +109,32 @@ class StatsManager: ObservableObject {
         reverseDays = UserDefaults.standard.integer(forKey: "reverseDays")
         rulesDiscovered = UserDefaults.standard.integer(forKey: "rulesDiscovered")
         mirrorTimeMinutes = UserDefaults.standard.integer(forKey: "mirrorTimeMinutes")
+        if let data = UserDefaults.standard.data(forKey: "achievements"),
+           let decoded = try? JSONDecoder().decode([Achievement].self, from: data) {
+            achievements = decoded
+        }
     }
 
     func saveStats() {
         UserDefaults.standard.set(reverseDays, forKey: "reverseDays")
         UserDefaults.standard.set(rulesDiscovered, forKey: "rulesDiscovered")
         UserDefaults.standard.set(mirrorTimeMinutes, forKey: "mirrorTimeMinutes")
+        if let data = try? JSONEncoder().encode(achievements) {
+            UserDefaults.standard.set(data, forKey: "achievements")
+        }
     }
 }
 
-struct Achievement: Identifiable {
-    let id = UUID()
+struct Achievement: Identifiable, Codable {
+    let id: UUID
     let name: String
     let icon: String
-    let isUnlocked: Bool
+    var isUnlocked: Bool
+
+    init(id: UUID = UUID(), name: String, icon: String, isUnlocked: Bool = false) {
+        self.id = id
+        self.name = name
+        self.icon = icon
+        self.isUnlocked = isUnlocked
+    }
 }
