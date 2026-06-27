@@ -163,7 +163,7 @@ struct ProfileView: View {
                         }
 
                         // Version
-                        Text("ReverseWorld v1.0.0")
+                        Text("ReverseWorldGo v3.0.0")
                             .font(.caption)
                             .foregroundColor(.white.opacity(0.3))
                             .padding(.top, 20)
@@ -297,7 +297,7 @@ struct PrivacyPolicyView: View {
                         .foregroundColor(.secondary)
 
                     Text("""
-                    ReverseWorld is committed to protecting your privacy. This app does not collect any personal data.
+                    ReverseWorldGo is committed to protecting your privacy. This app does not collect any personal data.
 
                     **Data Storage**
                     - All data is stored locally on your device
@@ -337,7 +337,7 @@ struct AboutView: View {
                         LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
 
-                Text("ReverseWorld")
+                Text("ReverseWorldGo")
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(.white)

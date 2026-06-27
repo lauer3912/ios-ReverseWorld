@@ -1,7 +1,7 @@
 # ReverseWorld - Feature List
 
 ## App Overview
-- **App Name**: ReverseWorld
+- **App Name**: ReverseWorldGo
 - **Bundle ID**: com.ggsheng.ReverseWorld
 - **Core Concept**: A mind-bending reverse reality app that flips, mirrors, reverses, and inverts real-world rules. Users experience mirror modes, reverse text, discover daily reverse rules, and explore parallel realities.
 - **Target Users**: Teens, Young Adults, Adults in Western markets (14-45 years old)
@@ -29,7 +29,7 @@
 12. Sarcasm Generator — Convert normal sentences into literal sarcasm
 
 ### 3. Today's Reverse Rule
-13. Daily Rule Push — New颠覆性规则 every day
+13. Daily Rule Push — New revolutionary rule every day
 14. Rule Calendar — Browse historical rules
 15. Rule Countdown — Time until next rule arrives
 16. Rule Challenge — Complete rule challenges for rewards
@@ -106,5 +106,5 @@
 
 ---
 
-*Document Version: 1.1*
-*Last Updated: 2026-05-19*
+*Document Version: 1.2*
+*Last Updated: 2026-06-28 07:50 CST (Katherine-E2wa1m audit)*

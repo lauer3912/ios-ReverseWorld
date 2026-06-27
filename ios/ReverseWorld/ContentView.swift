@@ -1,7 +1,25 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var selectedTab: Tab = .home
+    @State private var selectedTab: Tab = ContentView.initialTabFromLaunchArgs()
+
+    static func initialTabFromLaunchArgs() -> Tab {
+        let args = CommandLine.arguments
+        // Numeric form: -initialTab N (0..4)
+        if let i = args.firstIndex(of: "-initialTab"),
+           i + 1 < args.count,
+           let n = Int(args[i + 1]),
+           n >= 0, n < Tab.allCases.count {
+            return Tab.allCases[n]
+        }
+        // Legacy string form: -initialTab home|mirror|...
+        if let i = args.firstIndex(of: "-initialTab"),
+           i + 1 < args.count,
+           let t = Tab(rawValue: args[i + 1]) {
+            return t
+        }
+        return .home
+    }
 
     var body: some View {
         TabView(selection: $selectedTab) {
