@@ -161,9 +161,14 @@ struct ProfileView: View {
             onRestore: {
                 Task {
                     await premiumManager.restorePurchases()
-                    restoreMessage = premiumManager.isPremium
-                        ? "✅ Premium restored successfully"
-                        : "No previous purchases found for this Apple ID"
+                    // R2-9 fix: use restoreError from PremiumManager for proper feedback
+                    if premiumManager.isPremium {
+                        restoreMessage = "✅ Premium restored successfully"
+                    } else if let error = premiumManager.restoreError {
+                        restoreMessage = error
+                    } else {
+                        restoreMessage = "No previous purchases found for this Apple ID"
+                    }
                     showRestoreAlert = true
                 }
             }

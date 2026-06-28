@@ -24,6 +24,8 @@ struct ContentView: View {
         Group {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 // X2: iPad gets NavigationSplitView with sidebar instead of TabView
+                // R2-3 fix: add proper detail content frame so NavigationStack inside each tab
+                // doesn't get clipped by sidebar
                 NavigationSplitView(columnVisibility: $columnVisibility) {
                     List {
                         ForEach(Tab.allCases, id: \.self) { tab in
@@ -40,7 +42,9 @@ struct ContentView: View {
                 } detail: {
                     selectedTab.view
                         .id(selectedTab)
+                        .frame(maxWidth: .infinity)  // R2-3 fix: ensure detail fills available width
                 }
+                .navigationSplitViewStyle(.balanced)  // R2-3: balanced style for proper sidebar width
             } else {
                 // iPhone keeps TabView
                 tabView

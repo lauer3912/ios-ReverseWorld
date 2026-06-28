@@ -36,11 +36,6 @@
 	<string>ReverseWorldGo needs microphone access to record mirror videos with sound.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>ReverseWorldGo uses speech recognition to convert your voice into reversed text.</string>
-	<key>UIDeviceFamily</key>
-	<array>
-		<integer>1</integer>
-		<integer>2</integer>
-	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

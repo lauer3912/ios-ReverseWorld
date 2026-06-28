@@ -43,20 +43,36 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
     private let sessionQueue = DispatchQueue(label: "ReverseWorld.CameraSessionQueue")
     private var photoOutput: AVCapturePhotoOutput?
     private var currentInput: AVCaptureDeviceInput?
+    private var hasSetup = false  // 防止 requestCameraAccess 重复弹 iOS 弹窗
 
     override init() {
         super.init()
-        checkAuthorization()
+        // NEVER call AVCaptureDevice.requestAccess in init.
+        // iOS permission dialog is a system-level modal that persists across views.
+        // Only query the current status silently.
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        switch status {
+        case .authorized:
+            isAuthorized = true
+        case .denied, .restricted:
+            isPermanentlyDenied = true
+            error = "Camera access denied. Please enable in Settings."
+        default:
+            break
+        }
     }
 
-    func checkAuthorization() {
+    /// Call from user action (button tap) to trigger the iOS permission dialog.
+    /// Safe: only shows dialog on user's explicit input, not on view init.
+    func requestCameraAccess() {
+        guard !hasSetup else { return }
+        hasSetup = true
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             isAuthorized = true
             isPermanentlyDenied = false
             configureSession()
         case .notDetermined:
-            isPermanentlyDenied = false
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 DispatchQueue.main.async {
                     self?.isAuthorized = granted
@@ -64,13 +80,10 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
                 }
             }
         case .denied, .restricted:
-            // M1: explicitly mark as permanently denied so UI can offer Settings shortcut
-            isAuthorized = false
             isPermanentlyDenied = true
             error = "Camera access denied. Please enable in Settings."
         @unknown default:
-            isAuthorized = false
-            isPermanentlyDenied = true
+            break
         }
     }
 

@@ -10,6 +10,7 @@ final class PremiumManager: ObservableObject {
     @Published var products: [Product] = []
     @Published var purchasedProductIDs: Set<String> = []
     @Published var loadStatus: LoadStatus = .idle
+    @Published var restoreError: String?  // R2-9: expose restore error so UI can show feedback
 
     enum LoadStatus: Equatable {
         case idle
@@ -28,13 +29,13 @@ final class PremiumManager: ObservableObject {
         // Load from UserDefaults (in case user has previous purchases)
         isPremium = UserDefaults.standard.bool(forKey: "isPremium")
 
-        // Listen for transaction updates
-        transactionListener = listenForTransactions()
-
-        Task {
-            await self.refreshProducts()
-            await self.updatePurchasedProducts()
+        // R2-4 fix: use [weak self] to avoid strong reference in Task
+        Task { [weak self] in
+            await self?.refreshProducts()
+            await self?.updatePurchasedProducts()
         }
+
+        transactionListener = listenForTransactions()
     }
 
     deinit {
@@ -51,6 +52,7 @@ final class PremiumManager: ObservableObject {
             loadStatus = .loaded
         } catch {
             loadStatus = .failed(error.localizedDescription)
+            AppLog.premium.error("refreshProducts failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -75,9 +77,19 @@ final class PremiumManager: ObservableObject {
         }
     }
 
+    // R2-9 fix: capture and expose error so UI can show feedback
     func restorePurchases() async {
-        try? await AppStore.sync()
-        await updatePurchasedProducts()
+        restoreError = nil
+        do {
+            try await AppStore.sync()
+            await updatePurchasedProducts()
+            if purchasedProductIDs.isEmpty {
+                restoreError = "No previous purchases found for this Apple ID"
+            }
+        } catch {
+            restoreError = "Restore failed: \(error.localizedDescription)"
+            AppLog.premium.error("restorePurchases failed: \(error.localizedDescription, privacy: .public)")
+        }
     }
 
     // MARK: - Status
@@ -94,8 +106,9 @@ final class PremiumManager: ObservableObject {
         UserDefaults.standard.set(isPremium, forKey: "isPremium")
     }
 
+    // R2-7 fix: Task.detached already uses [weak self], but also add @Sendable closure
     private func listenForTransactions() -> Task<Void, Never> {
-        Task.detached { [weak self] in
+        Task.detached(priority: .background) { [weak self] in
             for await result in Transaction.updates {
                 guard let self = self else { return }
                 if case .verified(let transaction) = result {

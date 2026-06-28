@@ -16,7 +16,7 @@ struct HomeView: View {
                         // H1: Header with opacity glow (was forced rotation animation)
                         VStack(spacing: 8) {
                             Text("REVERSE WORLD")
-                                .font(.system(size: 32, weight: .bold, design: .rounded))
+                                .font(.system(size: 28, weight: .bold, design: .rounded))  // 28 instead of 32 to prevent truncation
                                 .foregroundStyle(
                                     LinearGradient(
                                         colors: [.yellow, .orange],
@@ -27,6 +27,8 @@ struct HomeView: View {
                                 .opacity(showGlowEffect ? 1.0 : 0.7)  // H1: opacity instead of rotation
                                 .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: showGlowEffect)
                                 .accessibilityAddTraits(.isHeader)
+                                .lineLimit(1)  // explicit: keep on one line
+                                .minimumScaleFactor(0.7)  // shrink if needed on narrow screens
 
                             Text("Flip Reality. Reverse Rules.")
                                 .font(.subheadline)
@@ -65,8 +67,18 @@ struct HomeView: View {
 
                         // Stats
                         HStack(spacing: 20) {
-                            StatBox(value: "\(statsManager.reverseDays)", label: "Reverse Days", icon: "calendar.badge.clock")
-                            StatBox(value: "\(statsManager.rulesDiscovered)", label: "Rules Found", icon: "scroll.fill")
+                            StatBox(
+                                value: "\(statsManager.reverseDays)",
+                                label: "Reverse Days",
+                                icon: "calendar.badge.clock",
+                                hint: statsManager.reverseDays == 0 ? "Start your first" : nil
+                            )
+                            StatBox(
+                                value: "\(statsManager.rulesDiscovered)",
+                                label: "Rules Found",
+                                icon: "scroll.fill",
+                                hint: statsManager.rulesDiscovered == 0 ? "Complete a rule" : nil
+                            )
                         }
                         .padding(.horizontal)
                     }
@@ -187,6 +199,7 @@ struct StatBox: View {
     let value: String
     let label: String
     let icon: String
+    var hint: String? = nil  // R2-12: 0-value hint
 
     var body: some View {
         VStack(spacing: 8) {
@@ -202,6 +215,12 @@ struct StatBox: View {
             Text(label)
                 .font(.caption)
                 .foregroundColor(Theme.Text.secondary)
+            if let hint = hint {
+                Text(hint)
+                    .font(.caption2)
+                    .italic()
+                    .foregroundColor(Theme.Accent.warning)
+            }
         }
         .frame(maxWidth: .infinity)
         .padding()

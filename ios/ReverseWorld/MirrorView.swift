@@ -74,7 +74,7 @@ struct MirrorView: View {
                                     if camera.isPermanentlyDenied {
                                         showPermissionAlert = true
                                     } else {
-                                        camera.checkAuthorization()
+                                        camera.requestCameraAccess()
                                     }
                                 }
                                 .accessibilityAddTraits(.isButton)

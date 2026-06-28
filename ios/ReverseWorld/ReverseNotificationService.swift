@@ -25,6 +25,27 @@ class ReverseNotificationService {
         }
     }
 
+    /// R2-10: async/await version that returns all status info
+    @MainActor
+    func currentAuthStatus() async -> UNAuthorizationStatus {
+        let settings = await UNUserNotificationCenter.current().notificationSettings()
+        return settings.authorizationStatus
+    }
+
+    /// R2-10: check if notifications should prompt user (covers ephemeral, provisional, notDetermined)
+    @MainActor
+    func shouldRequestAuthorization() async -> Bool {
+        let status = await currentAuthStatus()
+        switch status {
+        case .notDetermined, .provisional, .ephemeral:
+            return true
+        case .authorized, .denied:
+            return false
+        @unknown default:
+            return false
+        }
+    }
+
     func scheduleDailyRuleReminder() {
         let content = UNMutableNotificationContent()
         content.title = "Today's Reverse Rule 📜"
