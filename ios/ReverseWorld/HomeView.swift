@@ -6,6 +6,7 @@ struct HomeView: View {
     @EnvironmentObject var ruleManager: RuleManager
     @EnvironmentObject var statsManager: StatsManager
     @State private var showGlowEffect = false
+    var onProfileTap: (() -> Void)? = nil
 
     var body: some View {
         NavigationStack {
@@ -19,7 +20,12 @@ struct HomeView: View {
                         todaysRuleCard
                         // R6: 3 core content cards (the new "core" of the product)
                         coreContentSection
+                        // R7: 视频反转 (Video reversal) - separate core content type
+                        videoCoreContent
+                        // R7: Discover section (curated real events)
+                        discoverTeaser
                         statsRow
+                        profileButton
                     }
                     .padding(.bottom, 40)
                 }
@@ -168,6 +174,79 @@ struct HomeView: View {
                 )
             }
             .accessibilityLabel("Open Text Reverse: Reverse Translator")
+        }
+    }
+
+    /// R7: 视频反转 card (Video reversal core content)
+    @ViewBuilder
+    private var videoCoreContent: some View {
+        NavigationLink {
+            VideoInversionView()
+        } label: {
+            CoreContentCard(
+                icon: "video.bubble.left",
+                title: "Real Event Reversal",
+                subtitle: "Record video. Play it backwards.",
+                gradient: [Color.orange, Color.red],
+                badge: "VIDEO"
+            )
+        }
+        .accessibilityLabel("Open Real Event Reversal: Video inversion")
+    }
+
+    /// R7: Discover teaser
+    private var discoverTeaser: some View {
+        NavigationLink {
+            DiscoverView()
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "sparkles")
+                    .font(.title2)
+                    .foregroundStyle(LinearGradient(colors: [.yellow, .pink], startPoint: .topLeading, endPoint: .bottomTrailing))
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Discover Real Events")
+                        .font(.headline)
+                        .foregroundColor(Theme.Text.primary)
+                    Text("Architecture, music, DNA, butterflies — all reverse.")
+                        .font(.caption)
+                        .foregroundColor(Theme.Text.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .foregroundColor(Theme.Text.disabled)
+            }
+            .padding(Theme.Layout.cardPadding)
+            .background(
+                RoundedRectangle(cornerRadius: Theme.Card.largeRadius)
+                    .fill(Theme.Background.card)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Card.largeRadius)
+                            .stroke(LinearGradient(colors: [.yellow.opacity(0.3), .pink.opacity(0.3)], startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                    )
+            )
+            .padding(.horizontal)
+        }
+        .buttonStyle(.plain)
+    }
+
+    /// Profile button (R7: moved out of tab bar)
+    private var profileButton: some View {
+        Button {
+            onProfileTap?()
+        } label: {
+            HStack {
+                Image(systemName: "person.crop.circle")
+                    .font(.title3)
+                Text(L10n.profileTitle)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+            }
+            .foregroundColor(Theme.Text.secondary)
+            .padding()
+            .background(Theme.Background.card)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
+            .padding(.horizontal)
         }
     }
 

@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var selectedTab: Tab = ContentView.initialTabFromLaunchArgs()
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @State private var showProfileSheet = false
 
     static func initialTabFromLaunchArgs() -> Tab {
         let args = CommandLine.arguments
@@ -43,44 +44,46 @@ struct ContentView: View {
                 }
                 .navigationSplitViewStyle(.balanced)
             } else {
-                // iPhone: 5 tabs (removed Rules - merged into Home for space)
                 tabView
             }
         }
         .tint(Theme.Accent.primary)
+        .sheet(isPresented: $showProfileSheet) {
+            ProfileView()
+        }
     }
 
     private var tabView: some View {
         TabView(selection: $selectedTab) {
-            HomeView()
+            HomeView(onProfileTap: { showProfileSheet = true })
                 .tabItem { Label(L10n.homeTitle, systemImage: "house.fill") }
                 .tag(Tab.home)
             MirrorView()
                 .tabItem { Label(L10n.tabMirror, systemImage: "camera.fill") }
                 .tag(Tab.mirror)
+            DiscoverView()
+                .tabItem { Label(L10n.discoverTitle, systemImage: "sparkles") }
+                .tag(Tab.discover)
             VoiceInversionView()
                 .tabItem { Label(L10n.tabVoice, systemImage: "waveform") }
                 .tag(Tab.voice)
             TranslatorView()
                 .tabItem { Label(L10n.tabTranslate, systemImage: "text.bubble.fill") }
                 .tag(Tab.translate)
-            ProfileView()
-                .tabItem { Label(L10n.profileTitle, systemImage: "person.fill") }
-                .tag(Tab.profile)
         }
     }
 }
 
 enum Tab: String, CaseIterable, Hashable {
-    case home, mirror, voice, translate, profile
+    case home, mirror, discover, voice, translate
 
     var displayName: String {
         switch self {
         case .home: return L10n.homeTitle
         case .mirror: return L10n.tabMirror
+        case .discover: return L10n.discoverTitle
         case .voice: return L10n.tabVoice
         case .translate: return L10n.tabTranslate
-        case .profile: return L10n.profileTitle
         }
     }
 
@@ -88,9 +91,9 @@ enum Tab: String, CaseIterable, Hashable {
         switch self {
         case .home: return "house.fill"
         case .mirror: return "camera.fill"
+        case .discover: return "sparkles"
         case .voice: return "waveform"
         case .translate: return "text.bubble.fill"
-        case .profile: return "person.fill"
         }
     }
 
@@ -99,9 +102,9 @@ enum Tab: String, CaseIterable, Hashable {
         switch self {
         case .home: HomeView()
         case .mirror: MirrorView()
+        case .discover: DiscoverView()
         case .voice: VoiceInversionView()
         case .translate: TranslatorView()
-        case .profile: ProfileView()
         }
     }
 }

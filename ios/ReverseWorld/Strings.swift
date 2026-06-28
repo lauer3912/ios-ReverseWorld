@@ -144,6 +144,21 @@ enum L10n {
     static let tabMirror = "Mirror"
     static let tabTranslate = "Translate"
 
+    // R7: Discover Feed
+    static let discoverTitle = "Discover"
+    static let discoverSubtitle = "Real events. Real reversals."
+
+    // R7: Video Reversal
+    static let videoTitle = "Video Reversal"
+    static let videoTagline = "Record a real moment. Watch it play in reverse."
+    static let videoRecord = "Record"
+    static let videoRecordingHint = "Recording…"
+    static let videoTapToRecord = "Tap to record a video"
+    static let videoRecordAgain = "Record again"
+    static let videoReverseOn = "▶︎ Playing in reverse"
+    static let videoReverseOff = "▶︎ Playing forward"
+    static let videoReverseCTA = "Tap 'Reversed' to see real-life reversed"
+
     // App version
     static func appVersion(_ version: String, _ build: String) -> String {
         "\(appName) v\(version) (\(build))"
