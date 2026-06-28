@@ -23,9 +23,6 @@ struct ContentView: View {
     var body: some View {
         Group {
             if UIDevice.current.userInterfaceIdiom == .pad {
-                // X2: iPad gets NavigationSplitView with sidebar instead of TabView
-                // R2-3 fix: add proper detail content frame so NavigationStack inside each tab
-                // doesn't get clipped by sidebar
                 NavigationSplitView(columnVisibility: $columnVisibility) {
                     List {
                         ForEach(Tab.allCases, id: \.self) { tab in
@@ -37,16 +34,16 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .navigationTitle(L10n.appName)
+                    .navigationTitle("ReverseWorldGo")
                     .listStyle(.sidebar)
                 } detail: {
                     selectedTab.view
                         .id(selectedTab)
-                        .frame(maxWidth: .infinity)  // R2-3 fix: ensure detail fills available width
+                        .frame(maxWidth: .infinity)
                 }
-                .navigationSplitViewStyle(.balanced)  // R2-3: balanced style for proper sidebar width
+                .navigationSplitViewStyle(.balanced)
             } else {
-                // iPhone keeps TabView
+                // iPhone: 5 tabs (removed Rules - merged into Home for space)
                 tabView
             }
         }
@@ -56,17 +53,17 @@ struct ContentView: View {
     private var tabView: some View {
         TabView(selection: $selectedTab) {
             HomeView()
-                .tabItem { Label("Home", systemImage: "house.fill") }
+                .tabItem { Label(L10n.homeTitle, systemImage: "house.fill") }
                 .tag(Tab.home)
             MirrorView()
-                .tabItem { Label(L10n.translatorModeMirror, systemImage: "camera.fill") }
+                .tabItem { Label(L10n.tabMirror, systemImage: "camera.fill") }
                 .tag(Tab.mirror)
+            VoiceInversionView()
+                .tabItem { Label(L10n.tabVoice, systemImage: "waveform") }
+                .tag(Tab.voice)
             TranslatorView()
-                .tabItem { Label("Translate", systemImage: "text.bubble.fill") }
+                .tabItem { Label(L10n.tabTranslate, systemImage: "text.bubble.fill") }
                 .tag(Tab.translate)
-            RulesView()
-                .tabItem { Label("Rules", systemImage: "scroll.fill") }
-                .tag(Tab.rules)
             ProfileView()
                 .tabItem { Label(L10n.profileTitle, systemImage: "person.fill") }
                 .tag(Tab.profile)
@@ -75,14 +72,14 @@ struct ContentView: View {
 }
 
 enum Tab: String, CaseIterable, Hashable {
-    case home, mirror, translate, rules, profile
+    case home, mirror, voice, translate, profile
 
     var displayName: String {
         switch self {
-        case .home: return "Home"
-        case .mirror: return L10n.translatorModeMirror
-        case .translate: return "Translate"
-        case .rules: return "Rules"
+        case .home: return L10n.homeTitle
+        case .mirror: return L10n.tabMirror
+        case .voice: return L10n.tabVoice
+        case .translate: return L10n.tabTranslate
         case .profile: return L10n.profileTitle
         }
     }
@@ -91,8 +88,8 @@ enum Tab: String, CaseIterable, Hashable {
         switch self {
         case .home: return "house.fill"
         case .mirror: return "camera.fill"
+        case .voice: return "waveform"
         case .translate: return "text.bubble.fill"
-        case .rules: return "scroll.fill"
         case .profile: return "person.fill"
         }
     }
@@ -102,8 +99,8 @@ enum Tab: String, CaseIterable, Hashable {
         switch self {
         case .home: HomeView()
         case .mirror: MirrorView()
+        case .voice: VoiceInversionView()
         case .translate: TranslatorView()
-        case .rules: RulesView()
         case .profile: ProfileView()
         }
     }

@@ -119,6 +119,31 @@ enum L10n {
     static let restoreFailedFormat = "Restore failed: %@"
     static let purchaseCancelled = "Purchase cancelled"
 
+    // Voice Inversion (R6: 声音中隐含的秘密)
+    static let tabVoice = "Voice"
+    static let voiceTitle = "Voice Inversion"
+    static let voiceTagline = "Record your voice — play it backwards to discover hidden messages."
+    static let voiceTapToRecord = "Tap to record"
+    static let voiceRecord = "Record"
+    static let voiceStop = "Stop"
+    static let voiceOriginal = "Original"
+    static let voiceReversed = "Reversed"
+    static let voicePlayOriginal = "Play original"
+    static let voicePlayReversed = "Play reversed (listen for hidden message)"
+    static let voiceReRecord = "Re-record"
+    static let voiceRevealOn = "✨ Reveal in progress"
+    static let voiceRevealOff = "🔒 Secret locked"
+    static let voiceRevealDescription = "When you record and play your voice backwards, some sounds reveal hidden meanings — just like the famous backward messages in music. Listen carefully!"
+    static let voiceHide = "Hide"
+    static let voiceRevealButton = "Tell me more"
+    static let micDeniedTitle = "Microphone Access Denied"
+    static let micDeniedMessage = "Please enable microphone access in Settings to use Voice Inversion."
+    static let openSettings = "Open Settings"
+
+    // Tabs (iPhone)
+    static let tabMirror = "Mirror"
+    static let tabTranslate = "Translate"
+
     // App version
     static func appVersion(_ version: String, _ build: String) -> String {
         "\(appName) v\(version) (\(build))"

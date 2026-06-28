@@ -1,9 +1,11 @@
 import SwiftUI
 
+/// Home dashboard — R6 redesigned to showcase 3 core content categories
+/// (Visual / Audio / Real Event) per 佛老爷 22:13 feedback
 struct HomeView: View {
     @EnvironmentObject var ruleManager: RuleManager
     @EnvironmentObject var statsManager: StatsManager
-    @State private var showGlowEffect = false  // H1: changed from rotation to opacity
+    @State private var showGlowEffect = false
 
     var body: some View {
         NavigationStack {
@@ -13,74 +15,11 @@ struct HomeView: View {
 
                 ScrollView {
                     VStack(spacing: Theme.Layout.sectionSpacing) {
-                        // H1: Header with opacity glow (was forced rotation animation)
-                        VStack(spacing: 8) {
-                            Text(L10n.homeTitle)
-                                .font(.system(size: 28, weight: .bold, design: .rounded))  // 28 instead of 32 to prevent truncation
-                                .foregroundStyle(
-                                    LinearGradient(
-                                        colors: [.yellow, .orange],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .opacity(showGlowEffect ? 1.0 : 0.7)  // H1: opacity instead of rotation
-                                .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: showGlowEffect)
-                                .accessibilityAddTraits(.isHeader)
-                                .lineLimit(1)  // explicit: keep on one line
-                                .minimumScaleFactor(0.7)  // shrink if needed on narrow screens
-
-                            Text(L10n.homeTagline)
-                                .font(.subheadline)
-                                .foregroundColor(Theme.Text.secondary)
-                        }
-                        .padding(.top, 20)
-
-                        // Mirror Card
-                        NavigationLink {
-                            MirrorView()
-                        } label: {
-                            ReverseCard(
-                                icon: "camera.viewfinder",
-                                title: L10n.homeMirrorTitle,
-                                subtitle: L10n.homeMirrorSubtitle,
-                                gradient: [Color.purple, Color.blue]
-                            )
-                        }
-                        .accessibilityLabel("Open Mirror World")
-
-                        // Reverse Translator Card
-                        NavigationLink {
-                            TranslatorView()
-                        } label: {
-                            ReverseCard(
-                                icon: "text.bubble.fill",
-                                title: L10n.homeTranslatorTitle,
-                                subtitle: L10n.homeTranslatorSubtitle,
-                                gradient: [Color.green, Color.cyan]
-                            )
-                        }
-                        .accessibilityLabel("Open Reverse Translator")
-
-                        // Today's Rule Card (H4: added completion button)
+                        header
                         todaysRuleCard
-
-                        // Stats
-                        HStack(spacing: 20) {
-                            StatBox(
-                                value: "\(statsManager.reverseDays)",
-                                label: L10n.statReverseDays,
-                                icon: "calendar.badge.clock",
-                                hint: statsManager.reverseDays == 0 ? L10n.statStartYourFirst : nil
-                            )
-                            StatBox(
-                                value: "\(statsManager.rulesDiscovered)",
-                                label: L10n.statRulesFound,
-                                icon: "scroll.fill",
-                                hint: statsManager.rulesDiscovered == 0 ? L10n.statCompleteARule : nil
-                            )
-                        }
-                        .padding(.horizontal)
+                        // R6: 3 core content cards (the new "core" of the product)
+                        coreContentSection
+                        statsRow
                     }
                     .padding(.bottom, 40)
                 }
@@ -88,10 +27,33 @@ struct HomeView: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear { showGlowEffect = true }
-        .onDisappear { showGlowEffect = false }  // H5: stop animation when not visible
+        .onDisappear { showGlowEffect = false }
     }
 
-    // H4: Today's rule card with completion button
+    private var header: some View {
+        VStack(spacing: 8) {
+            Text(L10n.homeTitle)
+                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [.yellow, .orange],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .opacity(showGlowEffect ? 1.0 : 0.7)
+                .animation(.easeInOut(duration: 2).repeatForever(autoreverses: true), value: showGlowEffect)
+                .accessibilityAddTraits(.isHeader)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            Text(L10n.homeTagline)
+                .font(.subheadline)
+                .foregroundColor(Theme.Text.secondary)
+        }
+        .padding(.top, 20)
+    }
+
     private var todaysRuleCard: some View {
         VStack(spacing: 16) {
             HStack {
@@ -117,14 +79,12 @@ struct HomeView: View {
                     .foregroundColor(Theme.Text.primary)
                     .multilineTextAlignment(.center)
                     .accessibilityAddTraits(.isHeader)
-
                 Text(ruleManager.currentRule.description)
                     .font(.caption)
                     .foregroundColor(Theme.Text.secondary)
                     .multilineTextAlignment(.center)
             }
 
-            // H4: completion button
             Button {
                 ruleManager.completeCurrentRule()
                 statsManager.unlockAchievement(name: "First Rule", icon: "scroll.fill")
@@ -153,28 +113,120 @@ struct HomeView: View {
         )
         .padding(.horizontal)
     }
+
+    /// R6: 3 core content cards - the actual core of the product
+    private var coreContentSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("EXPLORE REVERSAL")
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(Theme.Accent.primary)
+                    .accessibilityAddTraits(.isHeader)
+                Spacer()
+            }
+            .padding(.horizontal)
+
+            // 1. Visual (Mirror) — with effect
+            NavigationLink {
+                MirrorView()
+            } label: {
+                CoreContentCard(
+                    icon: "camera.viewfinder",
+                    title: "Visual Reversal",
+                    subtitle: "Mirror the world. Apply effects.",
+                    gradient: [Color.purple, Color.blue],
+                    badge: "VISUAL"
+                )
+            }
+            .accessibilityLabel("Open Visual Reversal: Mirror World with effects")
+
+            // 2. Audio (Voice Inversion) — NEW core
+            NavigationLink {
+                VoiceInversionView()
+            } label: {
+                CoreContentCard(
+                    icon: "waveform.badge.magnifyingglass",
+                    title: "Sound Secrets",
+                    subtitle: "Record. Reverse. Listen for hidden meaning.",
+                    gradient: [Color.cyan, Color.indigo],
+                    badge: "AUDIO"
+                )
+            }
+            .accessibilityLabel("Open Sound Secrets: Voice Inversion")
+
+            // 3. Text (Translate) — kept
+            NavigationLink {
+                TranslatorView()
+            } label: {
+                CoreContentCard(
+                    icon: "text.bubble.fill",
+                    title: "Text Reverse",
+                    subtitle: "Transform words backwards.",
+                    gradient: [Color.green, Color.mint],
+                    badge: "TEXT"
+                )
+            }
+            .accessibilityLabel("Open Text Reverse: Reverse Translator")
+        }
+    }
+
+    private var statsRow: some View {
+        HStack(spacing: 16) {
+            StatBox(
+                value: "\(statsManager.reverseDays)",
+                label: L10n.statReverseDays,
+                icon: "calendar.badge.clock",
+                hint: statsManager.reverseDays == 0 ? L10n.statStartYourFirst : nil
+            )
+            StatBox(
+                value: "\(statsManager.rulesDiscovered)",
+                label: L10n.statRulesFound,
+                icon: "scroll.fill",
+                hint: statsManager.rulesDiscovered == 0 ? L10n.statCompleteARule : nil
+            )
+        }
+        .padding(.horizontal)
+    }
 }
 
-struct ReverseCard: View {
+struct CoreContentCard: View {
     let icon: String
     let title: String
     let subtitle: String
     let gradient: [Color]
+    let badge: String
 
     var body: some View {
         HStack(spacing: 16) {
-            Image(systemName: icon)
-                .font(.system(size: 32))
-                .foregroundStyle(LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
-                .accessibilityHidden(true)
+            ZStack {
+                Circle()
+                    .fill(LinearGradient(colors: gradient, startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 56, height: 56)
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(.white)
+            }
+            .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(Theme.Text.primary)
+                HStack(spacing: 6) {
+                    Text(badge)
+                        .font(.caption2)
+                        .fontWeight(.heavy)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(Theme.Accent.primary)
+                        .clipShape(Capsule())
+                    Text(title)
+                        .font(.headline)
+                        .foregroundColor(Theme.Text.primary)
+                }
                 Text(subtitle)
                     .font(.caption)
                     .foregroundColor(Theme.Text.secondary)
+                    .lineLimit(2)
             }
 
             Spacer()
@@ -184,12 +236,12 @@ struct ReverseCard: View {
         }
         .padding(Theme.Layout.cardPadding)
         .background(
-            LinearGradient(colors: [Theme.Background.card, Theme.Background.primary], startPoint: .topLeading, endPoint: .bottomTrailing)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: Theme.Card.largeRadius))
-        .overlay(
             RoundedRectangle(cornerRadius: Theme.Card.largeRadius)
-                .stroke(LinearGradient(colors: gradient.map { $0.opacity(0.5) }, startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                .fill(Theme.Background.card)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Theme.Card.largeRadius)
+                        .stroke(LinearGradient(colors: gradient.map { $0.opacity(0.4) }, startPoint: .leading, endPoint: .trailing), lineWidth: 1)
+                )
         )
         .padding(.horizontal)
     }
@@ -199,7 +251,7 @@ struct StatBox: View {
     let value: String
     let label: String
     let icon: String
-    var hint: String? = nil  // R2-12: 0-value hint
+    var hint: String? = nil
 
     var body: some View {
         VStack(spacing: 8) {
