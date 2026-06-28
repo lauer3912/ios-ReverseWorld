@@ -7,30 +7,56 @@ struct DiscoverView: View {
     private let items: [DiscoverItem] = DiscoverItem.curated
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    VStack(spacing: Theme.Layout.sectionSpacing) {
-                        header
-                        LazyVStack(spacing: 16) {
-                            ForEach(items) { item in
-                                NavigationLink {
-                                    destinationView(for: item)
-                                } label: {
-                                    DiscoverCard(item: item)
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary
+                        .ignoresSafeArea()
+                    ScrollView {
+                        VStack(spacing: Theme.Layout.sectionSpacing) {
+                            header
+                            LazyVStack(spacing: 16) {
+                                ForEach(items) { item in
+                                    NavigationLink {
+                                        destinationView(for: item)
+                                    } label: {
+                                        DiscoverCard(item: item)
+                                    }
+                                    .buttonStyle(.plain)
                                 }
-                                .buttonStyle(.plain)
                             }
                         }
+                        .padding()
                     }
-                    .padding()
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary
+                            .ignoresSafeArea()
+                        ScrollView {
+                            VStack(spacing: Theme.Layout.sectionSpacing) {
+                                header
+                                LazyVStack(spacing: 16) {
+                                    ForEach(items) { item in
+                                        NavigationLink {
+                                            destinationView(for: item)
+                                        } label: {
+                                            DiscoverCard(item: item)
+                                        }
+                                        .buttonStyle(.plain)
+                                    }
+                                }
+                            }
+                            .padding()
+                        }
+                    }
+                    .navigationTitle(L10n.discoverTitle)
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
-            .navigationTitle(L10n.discoverTitle)
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
 

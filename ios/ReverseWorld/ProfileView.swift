@@ -19,53 +19,64 @@ struct ProfileView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    VStack(spacing: Theme.Layout.sectionSpacing) {
-                        // Profile Header
-                        profileHeader
-
-                        // Stats Cards
-                        statsRow
-
-                        // Achievements
-                        achievementsSection
-
-                        // Premium Section
-                        premiumSection
-
-                        // Settings Section
-                        settingsSection
-
-                        // Version (P1: derive from Bundle.main)
-                        Text("ReverseWorldGo v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
-                            .font(.caption)
-                            .foregroundColor(Theme.Text.disabled)
-                            .padding(.top, 20)
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary.ignoresSafeArea()
+                    ScrollView {
+                        VStack(spacing: Theme.Layout.sectionSpacing) {
+                            profileHeader
+                            statsRow
+                            achievementsSection
+                            premiumSection
+                            settingsSection
+                            Text("ReverseWorldGo v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
+                                .font(.caption)
+                                .foregroundColor(Theme.Text.disabled)
+                                .padding(.top, 20)
+                        }
+                        .padding(.bottom, 40)
                     }
-                    .padding(.bottom, 40)
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title (when shown via sheet)
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary.ignoresSafeArea()
+                        ScrollView {
+                            VStack(spacing: Theme.Layout.sectionSpacing) {
+                                profileHeader
+                                statsRow
+                                achievementsSection
+                                premiumSection
+                                settingsSection
+                                Text("ReverseWorldGo v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
+                                    .font(.caption)
+                                    .foregroundColor(Theme.Text.disabled)
+                                    .padding(.top, 20)
+                            }
+                            .padding(.bottom, 40)
+                        }
+                    }
+                    .navigationTitle(L10n.profileTitle)
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
-            .navigationTitle(L10n.profileTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .alert(L10n.profileEditNameTitle, isPresented: $showEditName) {
-                TextField(L10n.profileNamePrompt, text: $username)
-                    .textInputAutocapitalization(.never)
-                Button(L10n.save) { validateAndSaveName() }
-                    .disabled(!isUsernameValid)
-                Button(L10n.cancel, role: .cancel) {}
-            } message: {
-                Text(L10n.profileNameMessage)
-            }
-            .alert(L10n.profileRestorePurchases, isPresented: $showRestoreAlert) {
-                Button(L10n.ok, role: .cancel) {}
-            } message: {
-                Text(restoreMessage)
-            }
+        }
+        .alert(L10n.profileEditNameTitle, isPresented: $showEditName) {
+            TextField(L10n.profileNamePrompt, text: $username)
+                .textInputAutocapitalization(.never)
+            Button(L10n.save) { validateAndSaveName() }
+                .disabled(!isUsernameValid)
+            Button(L10n.cancel, role: .cancel) {}
+        } message: {
+            Text(L10n.profileNameMessage)
+        }
+        .alert(L10n.profileRestorePurchases, isPresented: $showRestoreAlert) {
+            Button(L10n.ok, role: .cancel) {}
+        } message: {
+            Text(restoreMessage)
         }
     }
 

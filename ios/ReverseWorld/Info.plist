@@ -28,12 +28,12 @@
 	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>ReverseWorldGo needs camera access for mirror mode and reverse video features.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>ReverseWorldGo needs microphone access to record mirror videos with sound.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>ReverseWorldGo needs to save your reverse creations to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>ReverseWorldGo needs photo library access to apply reverse effects to your images.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>ReverseWorldGo needs microphone access to record mirror videos with sound.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>ReverseWorldGo uses speech recognition to convert your voice into reversed text.</string>
 	<key>UIApplicationSceneManifest</key>
@@ -41,6 +41,11 @@
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>
 	</dict>
+	<key>UIDeviceFamily</key>
+	<array>
+		<integer>1</integer>
+		<integer>2</integer>
+	</array>
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>

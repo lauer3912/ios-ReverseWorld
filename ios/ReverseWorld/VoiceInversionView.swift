@@ -10,41 +10,70 @@ struct VoiceInversionView: View {
     @State private var showReveal = false
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary.ignoresSafeArea()
-                ScrollView {
-                    VStack(spacing: Theme.Layout.sectionSpacing) {
-                        header
-                        if service.reversedURL != nil {
-                            playbackControls
-                            revealSection
-                        } else {
-                            recordingCard
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary.ignoresSafeArea()
+                    ScrollView {
+                        VStack(spacing: Theme.Layout.sectionSpacing) {
+                            header
+                            if service.reversedURL != nil {
+                                playbackControls
+                                revealSection
+                            } else {
+                                recordingCard
+                            }
+                            if let error = service.error {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundColor(Theme.Accent.danger)
+                                    .padding()
+                            }
+                            Spacer(minLength: 40)
                         }
-                        if let error = service.error {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundColor(Theme.Accent.danger)
-                                .padding()
-                        }
-                        Spacer(minLength: 40)
-                    }
-                    .padding()
-                }
-            }
-            .navigationTitle(L10n.voiceTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .alert(L10n.micDeniedTitle, isPresented: $showPermissionAlert) {
-                Button(L10n.openSettings) {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        UIApplication.shared.open(url)
+                        .padding()
                     }
                 }
-                Button(L10n.cancel, role: .cancel) {}
-            } message: {
-                Text(L10n.micDeniedMessage)
+            } else {
+                // iPhone: NavigationStack for navigation title
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary.ignoresSafeArea()
+                        ScrollView {
+                            VStack(spacing: Theme.Layout.sectionSpacing) {
+                                header
+                                if service.reversedURL != nil {
+                                    playbackControls
+                                    revealSection
+                                } else {
+                                    recordingCard
+                                }
+                                if let error = service.error {
+                                    Text(error)
+                                        .font(.caption)
+                                        .foregroundColor(Theme.Accent.danger)
+                                        .padding()
+                                }
+                                Spacer(minLength: 40)
+                            }
+                            .padding()
+                        }
+                    }
+                    .navigationTitle(L10n.voiceTitle)
+                    .navigationBarTitleDisplayMode(.inline)
+                }
             }
+        }
+        .alert(L10n.micDeniedTitle, isPresented: $showPermissionAlert) {
+            Button(L10n.openSettings) {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url)
+                }
+            }
+            Button(L10n.cancel, role: .cancel) {}
+        } message: {
+            Text(L10n.micDeniedMessage)
         }
     }
 

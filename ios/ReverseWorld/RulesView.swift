@@ -11,36 +11,53 @@ struct RulesView: View {
     private var allRules: [ReverseRule] { RuleData.allRules }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    VStack(spacing: Theme.Layout.sectionSpacing) {
-                        todaysRuleCard
-                        completeButton
-                        rulesDiscovery
-                        allRulesSection
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary.ignoresSafeArea()
+                    ScrollView {
+                        VStack(spacing: Theme.Layout.sectionSpacing) {
+                            todaysRuleCard
+                            completeButton
+                            rulesDiscovery
+                            allRulesSection
+                        }
+                        .padding(.vertical, 20)
                     }
-                    .padding(.vertical, 20)
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary.ignoresSafeArea()
+                        ScrollView {
+                            VStack(spacing: Theme.Layout.sectionSpacing) {
+                                todaysRuleCard
+                                completeButton
+                                rulesDiscovery
+                                allRulesSection
+                            }
+                            .padding(.vertical, 20)
+                        }
+                    }
+                    .navigationTitle("Reverse Rules")
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
-            .navigationTitle("Reverse Rules")
-            .navigationBarTitleDisplayMode(.inline)
-            // R4: confirmation dialog before completing
-            .confirmationDialog("Mark this rule as completed?", isPresented: $showCompleteConfirm, titleVisibility: .visible) {
-                Button(L10n.homeDidIt) {
-                    ruleManager.completeCurrentRule()
-                }
-                Button(L10n.cancel, role: .cancel) {}
-            } message: {
-                Text("Once marked, you can discover it in your collection.")
+        }
+        // R4: confirmation dialog before completing
+        .confirmationDialog("Mark this rule as completed?", isPresented: $showCompleteConfirm, titleVisibility: .visible) {
+            Button(L10n.homeDidIt) {
+                ruleManager.completeCurrentRule()
             }
-            // R7: rule detail sheet
-            .sheet(item: $selectedRule) { rule in
-                RuleDetailView(rule: rule, isDiscovered: ruleManager.ruleHistory.contains { $0.id == rule.id })
-            }
+            Button(L10n.cancel, role: .cancel) {}
+        } message: {
+            Text("Once marked, you can discover it in your collection.")
+        }
+        // R7: rule detail sheet
+        .sheet(item: $selectedRule) { rule in
+            RuleDetailView(rule: rule, isDiscovered: ruleManager.ruleHistory.contains { $0.id == rule.id })
         }
     }
 

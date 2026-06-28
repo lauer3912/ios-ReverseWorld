@@ -38,11 +38,13 @@ struct ContentView: View {
                     .navigationTitle("ReverseWorldGo")
                     .listStyle(.sidebar)
                 } detail: {
-                    selectedTab.view
+                    selectedTab.view(onProfileTap: { selectedTab = .profile })
                         .id(selectedTab)
                         .frame(maxWidth: .infinity)
                 }
                 .navigationSplitViewStyle(.balanced)
+                // iPad: HomeView profile button sets selectedTab to .profile (Tab enum case .profile)
+                // iPhone: HomeView profile button triggers showProfileSheet via callback
             } else {
                 tabView
             }
@@ -70,12 +72,14 @@ struct ContentView: View {
             TranslatorView()
                 .tabItem { Label(L10n.tabTranslate, systemImage: "text.bubble.fill") }
                 .tag(Tab.translate)
+            // iPhone: Profile sheet still works (HomeView button → showProfileSheet)
+            // iPad: HomeView button → selectedTab = .profile (added to Tab enum)
         }
     }
 }
 
 enum Tab: String, CaseIterable, Hashable {
-    case home, mirror, discover, voice, translate
+    case home, mirror, discover, voice, translate, profile
 
     var displayName: String {
         switch self {
@@ -84,6 +88,7 @@ enum Tab: String, CaseIterable, Hashable {
         case .discover: return L10n.discoverTitle
         case .voice: return L10n.tabVoice
         case .translate: return L10n.tabTranslate
+        case .profile: return L10n.profileTitle
         }
     }
 
@@ -94,17 +99,19 @@ enum Tab: String, CaseIterable, Hashable {
         case .discover: return "sparkles"
         case .voice: return "waveform"
         case .translate: return "text.bubble.fill"
+        case .profile: return "person.crop.circle"
         }
     }
 
     @ViewBuilder
-    var view: some View {
+    func view(onProfileTap: @escaping () -> Void) -> some View {
         switch self {
-        case .home: HomeView()
+        case .home: HomeView(onProfileTap: onProfileTap)
         case .mirror: MirrorView()
         case .discover: DiscoverView()
         case .voice: VoiceInversionView()
         case .translate: TranslatorView()
+        case .profile: ProfileView()
         }
     }
 }

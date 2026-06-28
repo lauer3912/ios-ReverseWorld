@@ -9,28 +9,47 @@ struct HomeView: View {
     var onProfileTap: (() -> Void)? = nil
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary
-                    .ignoresSafeArea()
-
-                ScrollView {
-                    VStack(spacing: Theme.Layout.sectionSpacing) {
-                        header
-                        todaysRuleCard
-                        // R6: 3 core content cards (the new "core" of the product)
-                        coreContentSection
-                        // R7: 视频反转 (Video reversal) - separate core content type
-                        videoCoreContent
-                        // R7: Discover section (curated real events)
-                        discoverTeaser
-                        statsRow
-                        profileButton
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5), NavigationSplitView provides sidebar
+                ZStack {
+                    Theme.Background.primary
+                        .ignoresSafeArea()
+                    ScrollView {
+                        VStack(spacing: Theme.Layout.sectionSpacing) {
+                            header
+                            todaysRuleCard
+                            coreContentSection
+                            videoCoreContent
+                            discoverTeaser
+                            statsRow
+                            profileButton
+                        }
+                        .padding(.bottom, 40)
                     }
-                    .padding(.bottom, 40)
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary
+                            .ignoresSafeArea()
+                        ScrollView {
+                            VStack(spacing: Theme.Layout.sectionSpacing) {
+                                header
+                                todaysRuleCard
+                                coreContentSection
+                                videoCoreContent
+                                discoverTeaser
+                                statsRow
+                                profileButton
+                            }
+                            .padding(.bottom, 40)
+                        }
+                    }
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
-            .navigationBarTitleDisplayMode(.inline)
         }
         .onAppear { showGlowEffect = true }
         .onDisappear { showGlowEffect = false }

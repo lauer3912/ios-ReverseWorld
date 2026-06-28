@@ -34,111 +34,125 @@ struct TranslatorView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary
-                    .ignoresSafeArea()
-
-                VStack(spacing: Theme.Layout.sectionSpacing) {
-                    // T4: Mode selector uses both horizontal and adaptive layout
-                    modeSelector
-                        .padding(.top, 10)
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(L10n.translatorInput)
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.purple)
-                            .accessibilityAddTraits(.isHeader)
-
-                        TextField(L10n.translatorPlaceholder, text: $inputText, axis: .vertical)
-                            .textFieldStyle(.plain)
-                            .padding()
-                            .background(Theme.Background.card)
-                            .foregroundColor(Theme.Text.primary)
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
-                            .lineLimit(3...6)
-                            .onChange(of: inputText) { _, _ in updateCaches() }  // T1
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary.ignoresSafeArea()
+                    content
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary.ignoresSafeArea()
+                        content
                     }
-                    .padding(.horizontal)
+                    .navigationTitle(L10n.homeTranslatorTitle)
+                    .navigationBarTitleDisplayMode(.inline)
+                }
+            }
+        }
+    }
 
-                    VStack(alignment: .leading, spacing: 8) {
-                        HStack {
-                            Text(L10n.translatorOutput)
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(Theme.Accent.warning)
-                                .accessibilityAddTraits(.isHeader)
+    @ViewBuilder
+    private var content: some View {
+        VStack(spacing: Theme.Layout.sectionSpacing) {
+            // T4: Mode selector uses both horizontal and adaptive layout
+            modeSelector
+                .padding(.top, 10)
 
-                            Spacer()
+            VStack(alignment: .leading, spacing: 8) {
+                Text(L10n.translatorInput)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.purple)
+                    .accessibilityAddTraits(.isHeader)
 
-                            Button {
-                                UIPasteboard.general.string = currentOutput
-                                copied = true
-                            } label: {
-                                Label(copied ? L10n.translatorCopied : L10n.translatorCopy, systemImage: copied ? "checkmark" : "doc.on.doc")
-                                    .font(.caption)
-                                    .foregroundColor(copied ? Theme.Accent.success : Theme.Text.primary)
-                            }
-                            .sensoryFeedback(.success, trigger: copied)  // T5
-                            .accessibilityLabel("Copy reversed text")
+                TextField(L10n.translatorPlaceholder, text: $inputText, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .padding()
+                    .background(Theme.Background.card)
+                    .foregroundColor(Theme.Text.primary)
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
+                    .lineLimit(3...6)
+                    .onChange(of: inputText) { _, _ in updateCaches() }  // T1
+            }
+            .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text(L10n.translatorOutput)
+                        .font(.caption)
+                        .fontWeight(.bold)
+                        .foregroundColor(Theme.Accent.warning)
+                        .accessibilityAddTraits(.isHeader)
+
+                    Spacer()
+
+                    Button {
+                        UIPasteboard.general.string = currentOutput
+                        copied = true
+                    } label: {
+                        Label(copied ? L10n.translatorCopied : L10n.translatorCopy, systemImage: copied ? "checkmark" : "doc.on.doc")
+                            .font(.caption)
+                            .foregroundColor(copied ? Theme.Accent.success : Theme.Text.primary)
+                    }
+                    .sensoryFeedback(.success, trigger: copied)  // T5
+                    .accessibilityLabel("Copy reversed text")
+                }
+                .onChange(of: copied) { _, newValue in
+                    if newValue {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                            copied = false
                         }
-                        .onChange(of: copied) { _, newValue in
-                            if newValue {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                    copied = false
-                                }
-                            }
-                        }
+                    }
+                }
 
-                        Text(currentOutput.isEmpty ? L10n.translatorOutputPlaceholder : currentOutput)
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundColor(currentOutput.isEmpty ? Theme.Text.disabled : Theme.Text.primary)
+                Text(currentOutput.isEmpty ? L10n.translatorOutputPlaceholder : currentOutput)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(currentOutput.isEmpty ? Theme.Text.disabled : Theme.Text.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Theme.Background.card)
+                    .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Theme.Card.cornerRadius)
+                            .stroke(Theme.Accent.warning.opacity(0.3), lineWidth: 1)
+                    )
+                    .accessibilityLabel("Reversed output: \(currentOutput)")
+            }
+            .padding(.horizontal)
+
+            VStack(alignment: .leading, spacing: 12) {
+                Text(L10n.translatorExamples)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(.cyan)
+                    .accessibilityAddTraits(.isHeader)
+
+                // T7: more examples
+                ForEach(examplePhrases, id: \.self) { phrase in
+                    Button {
+                        inputText = phrase
+                    } label: {
+                        Text(phrase)
+                            .font(.subheadline)
+                            .foregroundColor(Theme.Text.secondary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding()
                             .background(Theme.Background.card)
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: Theme.Card.cornerRadius)
-                                    .stroke(Theme.Accent.warning.opacity(0.3), lineWidth: 1)
-                            )
-                            .accessibilityLabel("Reversed output: \(currentOutput)")
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
-                    .padding(.horizontal)
-
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(L10n.translatorExamples)
-                            .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(.cyan)
-                            .accessibilityAddTraits(.isHeader)
-
-                        // T7: more examples
-                        ForEach(examplePhrases, id: \.self) { phrase in
-                            Button {
-                                inputText = phrase
-                            } label: {
-                                Text(phrase)
-                                    .font(.subheadline)
-                                    .foregroundColor(Theme.Text.secondary)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding()
-                                    .background(Theme.Background.card)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                            .accessibilityLabel("Use example: \(phrase)")
-                        }
-                    }
-                    .padding(.horizontal)
-
-                    Spacer()
+                    .accessibilityLabel("Use example: \(phrase)")
                 }
-                .padding(.bottom, 20)
             }
-            .navigationTitle(L10n.homeTranslatorTitle)
-            .navigationBarTitleDisplayMode(.inline)
+            .padding(.horizontal)
+
+            Spacer()
         }
+        .padding(.bottom, 20)
     }
 
     // T4: mode buttons in horizontal scroll, but constrained to fit narrow screens

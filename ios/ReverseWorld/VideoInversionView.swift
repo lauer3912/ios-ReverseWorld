@@ -13,30 +13,58 @@ struct VideoInversionView: View {
     @State private var isPlaying = false
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary.ignoresSafeArea()
-                ScrollView {
-                    VStack(spacing: Theme.Layout.sectionSpacing) {
-                        header
-                        if let url = recordedURL {
-                            playbackSection(url: url)
-                            recordAgainButton
-                        } else {
-                            recordSection
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary.ignoresSafeArea()
+                    ScrollView {
+                        VStack(spacing: Theme.Layout.sectionSpacing) {
+                            header
+                            if let url = recordedURL {
+                                playbackSection(url: url)
+                                recordAgainButton
+                            } else {
+                                recordSection
+                            }
+                            if let error = error {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundColor(Theme.Accent.danger)
+                            }
+                            Spacer()
                         }
-                        if let error = error {
-                            Text(error)
-                                .font(.caption)
-                                .foregroundColor(Theme.Accent.danger)
-                        }
-                        Spacer()
+                        .padding()
                     }
-                    .padding()
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title
+                NavigationStack {
+                    ZStack {
+                        Theme.Background.primary.ignoresSafeArea()
+                        ScrollView {
+                            VStack(spacing: Theme.Layout.sectionSpacing) {
+                                header
+                                if let url = recordedURL {
+                                    playbackSection(url: url)
+                                    recordAgainButton
+                                } else {
+                                    recordSection
+                                }
+                                if let error = error {
+                                    Text(error)
+                                        .font(.caption)
+                                        .foregroundColor(Theme.Accent.danger)
+                                }
+                                Spacer()
+                            }
+                            .padding()
+                        }
+                    }
+                    .navigationTitle(L10n.videoTitle)
+                    .navigationBarTitleDisplayMode(.inline)
                 }
             }
-            .navigationTitle(L10n.videoTitle)
-            .navigationBarTitleDisplayMode(.inline)
         }
         .onDisappear { recorder.cleanup() }
     }

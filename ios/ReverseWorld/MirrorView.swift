@@ -11,176 +11,190 @@ struct MirrorView: View {
     @Environment(\.openURL) private var openURL
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Theme.Background.primary
-                    .ignoresSafeArea()
-
-                VStack(spacing: Theme.Layout.sectionSpacing) {
-                    // Mirror Frame
+        Group {
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                // iPad: skip NavigationStack (per #44 #5)
+                ZStack {
+                    Theme.Background.primary.ignoresSafeArea()
+                    content
+                }
+            } else {
+                // iPhone: NavigationStack for navigation title (no nav bar shown per M7)
+                NavigationStack {
                     ZStack {
-                        if camera.isAuthorized {
-                            CameraPreview(camera: camera)
-                                .clipShape(RoundedRectangle(cornerRadius: Theme.Card.pillRadius))
-                                .frame(maxWidth: 360, maxHeight: 480)  // M4: adaptive instead of fixed 280x380
-                                .scaleEffect(x: isMirrored ? -1 : 1, y: 1)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: Theme.Card.pillRadius)
-                                        .stroke(
-                                            LinearGradient(
-                                                colors: [.yellow, .orange],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            ),
-                                            lineWidth: 8
-                                        )
-                                )
-                                .accessibilityLabel("Live camera mirror preview")
-                        } else {
-                            // M1: differentiated tap action based on permission state
+                        Theme.Background.primary.ignoresSafeArea()
+                        content
+                    }
+                    .navigationTitle(L10n.homeMirrorTitle)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar(.hidden, for: .navigationBar)  // M7: hide nav bar in this nested view
+                }
+            }
+        }
+        // M2: photo saved alert
+        .alert(L10n.mirrorSavedTitle, isPresented: $showSavedAlert) {
+            Button(L10n.ok, role: .cancel) {}
+        } message: {
+            Text(L10n.mirrorSavedMessage)
+        }
+        // M1: redirect to Settings when permanently denied
+        .alert(L10n.mirrorAuthDeniedTitle, isPresented: $showPermissionAlert) {
+            Button(L10n.mirrorAuthDeniedSettings) {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    openURL(url)
+                }
+            }
+            Button(L10n.cancel, role: .cancel) {}
+        } message: {
+            Text(L10n.mirrorAuthDeniedMessage)
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        VStack(spacing: Theme.Layout.sectionSpacing) {
+            // Mirror Frame
+            ZStack {
+                if camera.isAuthorized {
+                    CameraPreview(camera: camera)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Card.pillRadius))
+                        .frame(maxWidth: 360, maxHeight: 480)  // M4: adaptive instead of fixed 280x380
+                        .scaleEffect(x: isMirrored ? -1 : 1, y: 1)
+                        .overlay(
                             RoundedRectangle(cornerRadius: Theme.Card.pillRadius)
-                                .fill(
+                                .stroke(
                                     LinearGradient(
-                                        colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.3)],
+                                        colors: [.yellow, .orange],
                                         startPoint: .topLeading,
                                         endPoint: .bottomTrailing
-                                    )
+                                    ),
+                                    lineWidth: 8
                                 )
-                                .frame(maxWidth: 360, maxHeight: 480)
-                                .overlay(
-                                    VStack {
-                                        Image(systemName: "camera.fill")
-                                            .font(.system(size: 60))
-                                            .foregroundColor(Theme.Text.disabled)
-                                        Text(camera.error ?? L10n.mirrorTapToEnable)
-                                            .font(.caption)
-                                            .foregroundColor(Theme.Text.tertiary)
-                                            .multilineTextAlignment(.center)
-                                            .padding(.horizontal)
-                                    }
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: Theme.Card.pillRadius)
-                                        .stroke(
-                                            LinearGradient(
-                                                colors: [.yellow, .orange],
-                                                startPoint: .topLeading,
-                                                endPoint: .bottomTrailing
-                                            ),
-                                            lineWidth: 8
-                                        )
-                                )
-                                .onTapGesture {
-                                    if camera.isPermanentlyDenied {
-                                        showPermissionAlert = true
-                                    } else {
-                                        camera.requestCameraAccess()
-                                    }
-                                }
-                                .accessibilityAddTraits(.isButton)
-                                .accessibilityLabel(camera.isPermanentlyDenied ? "Camera denied, tap to open Settings" : "Enable camera access")
-                        }
-
-                        if showCaptureEffect {
-                            Rectangle()
-                                .fill(.white)
-                                .transition(.opacity)
-                        }
-                    }
-                    .padding(.top, 40)
-
-                    HStack(spacing: 40) {
-                        Button {
-                            withAnimation(.spring()) {
-                                isMirrored.toggle()
-                            }
-                        } label: {
+                        )
+                        .accessibilityLabel("Live camera mirror preview")
+                } else {
+                    // M1: differentiated tap action based on permission state
+                    RoundedRectangle(cornerRadius: Theme.Card.pillRadius)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.purple.opacity(0.3), Color.blue.opacity(0.3)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            )
+                        )
+                        .frame(maxWidth: 360, maxHeight: 480)
+                        .overlay(
                             VStack {
-                                Image(systemName: isMirrored ? "arrow.left.and.right.righttriangle.left.righttriangle.right.fill" : "arrow.left.and.right.righttriangle.left.righttriangle.right")
-                                    .font(.title)
-                                Text(isMirrored ? L10n.mirrorMirrored : L10n.mirrorNormal)
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 60))
+                                    .foregroundColor(Theme.Text.disabled)
+                                Text(camera.error ?? L10n.mirrorTapToEnable)
                                     .font(.caption)
+                                    .foregroundColor(Theme.Text.tertiary)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal)
                             }
-                            .foregroundColor(Theme.Text.primary)
-                            .frame(width: 80, height: 80)
-                            .background(Theme.Background.card)
-                            .clipShape(Circle())
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.Card.pillRadius)
+                                .stroke(
+                                    LinearGradient(
+                                        colors: [.yellow, .orange],
+                                        startPoint: .topLeading,
+                                        endPoint: .bottomTrailing
+                                    ),
+                                    lineWidth: 8
+                                )
+                        )
+                        .onTapGesture {
+                            if camera.isPermanentlyDenied {
+                                showPermissionAlert = true
+                            } else {
+                                camera.requestCameraAccess()
+                            }
                         }
-                        .sensoryFeedback(.impact, trigger: isMirrored)  // M3
-                        .accessibilityLabel(isMirrored ? "Currently mirrored, tap to disable" : "Currently normal, tap to mirror")
+                        .accessibilityAddTraits(.isButton)
+                        .accessibilityLabel(camera.isPermanentlyDenied ? "Camera denied, tap to open Settings" : "Enable camera access")
+                }
 
-                        Button {
-                            capturePhoto()
-                        } label: {
-                            ZStack {
-                                Circle()
-                                    .stroke(Theme.Text.primary, lineWidth: 4)
-                                    .frame(width: 70, height: 70)
-                                Circle()
-                                    .fill(Theme.Text.primary)
-                                    .frame(width: 56, height: 56)
-                            }
-                        }
-                        .disabled(!camera.isAuthorized)
-                        .accessibilityLabel("Capture photo")
+                if showCaptureEffect {
+                    Rectangle()
+                        .fill(.white)
+                        .transition(.opacity)
+                }
+            }
+            .padding(.top, 40)
 
-                        Button {
-                            camera.flipCamera()
-                        } label: {
-                            VStack {
-                                Image(systemName: "camera.rotate.fill")
-                                    .font(.title)
-                                Text(L10n.mirrorFlip)
-                                    .font(.caption)
-                            }
-                            .foregroundColor(Theme.Text.primary)
-                            .frame(width: 80, height: 80)
-                            .background(Theme.Background.card)
-                            .clipShape(Circle())
-                        }
-                        .sensoryFeedback(.impact, trigger: camera.isFrontCamera)
-                        .accessibilityLabel("Switch camera")
+            HStack(spacing: 40) {
+                Button {
+                    withAnimation(.spring()) {
+                        isMirrored.toggle()
                     }
-                    .padding(.top, 20)
-
-                    Spacer()
-
-                    VStack(spacing: 8) {
-                        Text(L10n.mirrorTipTitle)
+                } label: {
+                    VStack {
+                        Image(systemName: isMirrored ? "arrow.left.and.right.righttriangle.left.righttriangle.right.fill" : "arrow.left.and.right.righttriangle.left.righttriangle.right")
+                            .font(.title)
+                        Text(isMirrored ? L10n.mirrorMirrored : L10n.mirrorNormal)
                             .font(.caption)
-                            .fontWeight(.bold)
-                            .foregroundColor(Theme.Accent.warning)
-                        Text(L10n.mirrorTipBody)
-                            .font(.caption)
-                            .foregroundColor(Theme.Text.secondary)
-                            .multilineTextAlignment(.center)
                     }
-                    .padding()
+                    .foregroundColor(Theme.Text.primary)
+                    .frame(width: 80, height: 80)
                     .background(Theme.Background.card)
-                    .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
-                    .padding(.horizontal)
+                    .clipShape(Circle())
                 }
-            }
-            .navigationTitle(L10n.homeMirrorTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.hidden, for: .navigationBar)  // M7: hide nav bar in this nested view
-            // M2: photo saved alert
-            .alert(L10n.mirrorSavedTitle, isPresented: $showSavedAlert) {
-                Button(L10n.ok, role: .cancel) {}
-            } message: {
-                Text(L10n.mirrorSavedMessage)
-            }
-            // M1: redirect to Settings when permanently denied
-            .alert(L10n.mirrorAuthDeniedTitle, isPresented: $showPermissionAlert) {
-                Button(L10n.mirrorAuthDeniedSettings) {
-                    if let url = URL(string: UIApplication.openSettingsURLString) {
-                        openURL(url)
+                .sensoryFeedback(.impact, trigger: isMirrored)  // M3
+                .accessibilityLabel(isMirrored ? "Currently mirrored, tap to disable" : "Currently normal, tap to mirror")
+
+                Button {
+                    capturePhoto()
+                } label: {
+                    ZStack {
+                        Circle()
+                            .stroke(Theme.Text.primary, lineWidth: 4)
+                            .frame(width: 70, height: 70)
+                        Circle()
+                            .fill(Theme.Text.primary)
+                            .frame(width: 56, height: 56)
                     }
                 }
-                Button(L10n.cancel, role: .cancel) {}
-            } message: {
-                Text(L10n.mirrorAuthDeniedMessage)
+                .disabled(!camera.isAuthorized)
+                .accessibilityLabel("Capture photo")
+
+                Button {
+                    camera.flipCamera()
+                } label: {
+                    VStack {
+                        Image(systemName: "camera.rotate.fill")
+                            .font(.title)
+                        Text(L10n.mirrorFlip)
+                            .font(.caption)
+                    }
+                    .foregroundColor(Theme.Text.primary)
+                    .frame(width: 80, height: 80)
+                    .background(Theme.Background.card)
+                    .clipShape(Circle())
+                }
+                .sensoryFeedback(.impact, trigger: camera.isFrontCamera)
+                .accessibilityLabel("Switch camera")
             }
+            .padding(.top, 20)
+
+            Spacer()
+
+            VStack(spacing: 8) {
+                Text(L10n.mirrorTipTitle)
+                    .font(.caption)
+                    .fontWeight(.bold)
+                    .foregroundColor(Theme.Accent.warning)
+                Text(L10n.mirrorTipBody)
+                    .font(.caption)
+                    .foregroundColor(Theme.Text.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+            .background(Theme.Background.card)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
+            .padding(.horizontal)
         }
     }
 
