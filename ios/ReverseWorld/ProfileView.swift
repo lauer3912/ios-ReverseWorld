@@ -50,19 +50,19 @@ struct ProfileView: View {
                     .padding(.bottom, 40)
                 }
             }
-            .navigationTitle("Profile")
+            .navigationTitle(L10n.profileTitle)
             .navigationBarTitleDisplayMode(.inline)
-            .alert("Edit Username", isPresented: $showEditName) {
-                TextField("Username (3-20 chars)", text: $username)
+            .alert(L10n.profileEditNameTitle, isPresented: $showEditName) {
+                TextField(L10n.profileNamePrompt, text: $username)
                     .textInputAutocapitalization(.never)
-                Button("Save") { validateAndSaveName() }
+                Button(L10n.save) { validateAndSaveName() }
                     .disabled(!isUsernameValid)
-                Button("Cancel", role: .cancel) {}
+                Button(L10n.cancel, role: .cancel) {}
             } message: {
-                Text("Pick a name shown in your profile and shared reverse content.")
+                Text(L10n.profileNameMessage)
             }
-            .alert("Restore Purchases", isPresented: $showRestoreAlert) {
-                Button("OK", role: .cancel) {}
+            .alert(L10n.profileRestorePurchases, isPresented: $showRestoreAlert) {
+                Button(L10n.ok, role: .cancel) {}
             } message: {
                 Text(restoreMessage)
             }
@@ -92,7 +92,7 @@ struct ProfileView: View {
                     showEditName = true
                 } label: {
                     HStack {
-                        Text(username.isEmpty ? "Set your name" : "@\(username)")
+                        Text(username.isEmpty ? L10n.profileSetName : "@\(username)")
                             .font(.title2)
                             .fontWeight(.bold)
                             .foregroundColor(username.isEmpty ? Theme.Text.tertiary : Theme.Text.primary)
@@ -101,7 +101,7 @@ struct ProfileView: View {
                             .foregroundColor(Theme.Text.secondary)
                     }
                 }
-                .accessibilityLabel(username.isEmpty ? "Set your name" : "Edit username")
+                .accessibilityLabel(username.isEmpty ? L10n.profileSetName : "Edit username")
 
                 // P11: dynamic subtitle reflecting actual usage
                 Text(profileSubtitle)
@@ -114,9 +114,9 @@ struct ProfileView: View {
 
     private var profileSubtitle: String {
         if statsManager.reverseDays == 0 {
-            return "Reversing starts today"
+            return L10n.profileStartReverse
         } else if statsManager.reverseDays == 1 {
-            return "Day 1 of reversing"
+            return L10n.profileDay1
         } else {
             return "\(statsManager.reverseDays) days reversing"
         }
@@ -124,23 +124,23 @@ struct ProfileView: View {
 
     private var statsRow: some View {
         HStack(spacing: 16) {
-            ProfileStatCard(value: "\(statsManager.reverseDays)", label: "Reverse Days", icon: "calendar.badge.clock", color: .orange)
-            ProfileStatCard(value: "\(ruleManager.ruleHistory.count)", label: "Rules Done", icon: "scroll.fill", color: .yellow)
-            ProfileStatCard(value: "\(statsManager.mirrorTimeMinutes)", label: "Mirror Min", icon: "camera.viewfinder", color: .purple)
+            ProfileStatCard(value: "\(statsManager.reverseDays)", label: L10n.statReverseDays, icon: "calendar.badge.clock", color: .orange)
+            ProfileStatCard(value: "\(ruleManager.ruleHistory.count)", label: L10n.profileRulesDone, icon: "scroll.fill", color: .yellow)
+            ProfileStatCard(value: "\(statsManager.mirrorTimeMinutes)", label: L10n.profileMirrorMin, icon: "camera.viewfinder", color: .purple)
         }
         .padding(.horizontal)
     }
 
     private var achievementsSection: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("ACHIEVEMENTS")
+            Text(L10n.profileAchievements)
                 .font(.caption)
                 .fontWeight(.bold)
                 .foregroundColor(Theme.Accent.warning)
                 .padding(.horizontal)
 
             if achievements.isEmpty {
-                Text("Complete rules to unlock achievements")
+                Text(L10n.profileAchievementsEmpty)
                     .font(.caption)
                     .foregroundColor(Theme.Text.tertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -163,11 +163,11 @@ struct ProfileView: View {
                     await premiumManager.restorePurchases()
                     // R2-9 fix: use restoreError from PremiumManager for proper feedback
                     if premiumManager.isPremium {
-                        restoreMessage = "✅ Premium restored successfully"
+                        restoreMessage = L10n.restoreSuccess
                     } else if let error = premiumManager.restoreError {
                         restoreMessage = error
                     } else {
-                        restoreMessage = "No previous purchases found for this Apple ID"
+                        restoreMessage = L10n.restoreNotFound
                     }
                     showRestoreAlert = true
                 }
@@ -177,14 +177,14 @@ struct ProfileView: View {
 
     private var settingsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("SETTINGS")
+            Text(L10n.profileSettings)
                 .font(.caption)
                 .fontWeight(.bold)
                 .foregroundColor(.cyan)
                 .padding(.horizontal)
 
             VStack(spacing: 0) {
-                SettingsRow(icon: "moon.fill", title: "Dark Mode", color: .purple) {
+                SettingsRow(icon: "moon.fill", title: L10n.profileDarkMode, color: .purple) {
                     Toggle("", isOn: $isDarkMode)
                         .labelsHidden()
                         .accessibilityLabel("Dark mode toggle")
@@ -192,7 +192,7 @@ struct ProfileView: View {
 
                 Divider().background(Color.white.opacity(0.1))
 
-                SettingsRow(icon: "bell.fill", title: "Daily Reminder", color: .yellow) {
+                SettingsRow(icon: "bell.fill", title: L10n.profileDailyReminder, color: .yellow) {
                     Toggle("", isOn: $isNotificationsEnabled)
                         .labelsHidden()
                         .accessibilityLabel("Daily reminder toggle")
@@ -219,7 +219,7 @@ struct ProfileView: View {
                 NavigationLink {
                     PrivacyPolicyView()
                 } label: {
-                    SettingsRow(icon: "hand.raised.fill", title: "Privacy Policy", color: .blue, showChevron: true) {}
+                    SettingsRow(icon: "hand.raised.fill", title: L10n.profilePrivacyPolicy, color: .blue, showChevron: true) {}
                 }
                 .accessibilityLabel("Privacy policy")
 
@@ -230,7 +230,7 @@ struct ProfileView: View {
                         openURL(url)  // P12: use Environment openURL instead of force-unwrap Link
                     }
                 } label: {
-                    SettingsRow(icon: "envelope.fill", title: "Contact Us", color: .green, showChevron: true) {}
+                    SettingsRow(icon: "envelope.fill", title: L10n.profileContactUs, color: .green, showChevron: true) {}
                 }
                 .accessibilityLabel("Contact us via email")
 
@@ -239,7 +239,7 @@ struct ProfileView: View {
                 NavigationLink {
                     AboutView()
                 } label: {
-                    SettingsRow(icon: "info.circle.fill", title: "About", color: .orange, showChevron: true) {}
+                    SettingsRow(icon: "info.circle.fill", title: L10n.profileAbout, color: .orange, showChevron: true) {}
                 }
                 .accessibilityLabel("About ReverseWorldGo")
             }
@@ -376,7 +376,7 @@ struct PrivacyPolicyView: View {
                 }
             }
         }
-        .navigationTitle("Privacy Policy")
+        .navigationTitle(L10n.profilePrivacyPolicy)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -413,7 +413,7 @@ struct AboutView: View {
                     )
                     .accessibilityHidden(true)
 
-                Text("ReverseWorldGo")
+                Text(L10n.appName)
                     .font(.title)
                     .fontWeight(.bold)
                     .foregroundColor(Theme.Text.primary)
@@ -421,7 +421,7 @@ struct AboutView: View {
                 Text("Version \(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
                     .foregroundColor(Theme.Text.tertiary)
 
-                Text("Flip reality. Reverse rules. Experience the world differently.")
+                Text(L10n.aboutTagline)
                     .font(.body)
                     .foregroundColor(Theme.Text.secondary)
                     .multilineTextAlignment(.center)
@@ -431,7 +431,7 @@ struct AboutView: View {
             }
             .padding(.top, 60)
         }
-        .navigationTitle("About")
+        .navigationTitle(L10n.profileAbout)
         .navigationBarTitleDisplayMode(.inline)
     }
 }
@@ -446,12 +446,12 @@ struct PremiumSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("PREMIUM")
+                Text(L10n.profilePremium)
                     .font(.caption)
                     .fontWeight(.bold)
                     .foregroundColor(Theme.Accent.warning)
                 if premiumManager.isPremium {
-                    Text("· ACTIVE")
+                    Text(L10n.profilePremiumActive)
                         .font(.caption)
                         .fontWeight(.bold)
                         .foregroundColor(Theme.Accent.success)
@@ -470,10 +470,10 @@ struct PremiumSection: View {
                         .font(.title2)
                         .foregroundStyle(LinearGradient(colors: [.yellow, .orange], startPoint: .leading, endPoint: .trailing))
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(premiumManager.isPremium ? "Premium Active" : "Unlock Premium")
+                        Text(premiumManager.isPremium ? L10n.profilePremiumActiveTitle : L10n.paywallTitle)
                             .font(.headline)
                             .foregroundColor(Theme.Text.primary)
-                        Text(premiumManager.isPremium ? "All filters, ad-free, unlimited entries" : "Get 7-day free trial")
+                        Text(premiumManager.isPremium ? L10n.profilePremiumDescriptionActive : L10n.profilePremiumDescription)
                             .font(.caption)
                             .foregroundColor(Theme.Text.secondary)
                     }
@@ -505,7 +505,7 @@ struct PremiumSection: View {
                 } label: {
                     HStack {
                         Image(systemName: "arrow.clockwise.circle")
-                        Text("Restore Purchases")
+                        Text(L10n.profileRestorePurchases)
                     }
                     .font(.caption)
                     .foregroundColor(Theme.Text.secondary)
@@ -538,7 +538,7 @@ struct PaywallView: View {
                             .font(.system(size: 60))
                             .foregroundStyle(LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
                             .accessibilityHidden(true)
-                        Text("Unlock Premium")
+                        Text(L10n.paywallTitle)
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(Theme.Text.primary)
@@ -551,11 +551,11 @@ struct PaywallView: View {
                     .padding(.top, 40)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        PremiumFeatureRow(icon: "camera.viewfinder", title: "All mirror filters unlocked")
-                        PremiumFeatureRow(icon: "text.bubble.fill", title: "All reverse translator modes")
-                        PremiumFeatureRow(icon: "scroll.fill", title: "Unlimited reverse journal entries")
-                        PremiumFeatureRow(icon: "bell.fill", title: "Priority rule updates")
-                        PremiumFeatureRow(icon: "xmark.circle.fill", title: "Ad-free experience")
+                        PremiumFeatureRow(icon: "camera.viewfinder", title: L10n.paywallFeatureFilters)
+                        PremiumFeatureRow(icon: "text.bubble.fill", title: L10n.paywallFeatureTranslator)
+                        PremiumFeatureRow(icon: "scroll.fill", title: L10n.paywallFeatureJournal)
+                        PremiumFeatureRow(icon: "bell.fill", title: L10n.paywallFeatureRules)
+                        PremiumFeatureRow(icon: "xmark.circle.fill", title: L10n.paywallFeatureNoAds)
                     }
                     .padding(.horizontal)
                     .padding(.top, 16)
@@ -565,7 +565,7 @@ struct PaywallView: View {
                     VStack(spacing: 12) {
                         if let yearly = premiumManager.yearlyProduct {
                             PurchaseButton(
-                                title: "Yearly",
+                                title: L10n.paywallYearly,
                                 subtitle: "Best value • \(premiumManager.yearlyDisplayPrice)/year",
                                 product: yearly,
                                 isPopular: true,
@@ -574,8 +574,8 @@ struct PaywallView: View {
                             )
                         } else {
                             PurchaseButton(
-                                title: "Yearly",
-                                subtitle: "Best value • $29.99/year",
+                                title: L10n.paywallYearly,
+                                subtitle: L10n.paywallYearlyFallback,
                                 product: nil,
                                 isPopular: true,
                                 purchasing: $purchasing,
@@ -585,7 +585,7 @@ struct PaywallView: View {
 
                         if let monthly = premiumManager.monthlyProduct {
                             PurchaseButton(
-                                title: "Monthly",
+                                title: L10n.paywallMonthly,
                                 subtitle: premiumManager.displayPrice + "/month",
                                 product: monthly,
                                 isPopular: false,
@@ -602,7 +602,7 @@ struct PaywallView: View {
                             isPresented = premiumManager.isPremium
                         }
                     } label: {
-                        Text("Restore Purchases")
+                        Text(L10n.profileRestorePurchases)
                             .font(.caption)
                             .foregroundColor(Theme.Text.secondary)
                     }
@@ -619,7 +619,7 @@ struct PaywallView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Close") { isPresented = false }
+                    Button(L10n.paywallClose) { isPresented = false }
                         .foregroundColor(Theme.Text.primary)
                 }
             }
@@ -635,7 +635,7 @@ struct PaywallView: View {
                 if success {
                     isPresented = false
                 } else {
-                    purchaseError = "Purchase cancelled"
+                    purchaseError = L10n.purchaseCancelled
                 }
             } catch {
                 AppLog.premium.error("Purchase failed: \(error.localizedDescription, privacy: .public)")
@@ -683,7 +683,7 @@ struct PurchaseButton: View {
                             .font(.headline)
                             .foregroundColor(isPopular ? .black : Theme.Text.primary)
                         if isPopular {
-                            Text("POPULAR")
+                            Text(L10n.paywallPopular)
                                 .font(.caption2)
                                 .fontWeight(.bold)
                                 .foregroundColor(.black)

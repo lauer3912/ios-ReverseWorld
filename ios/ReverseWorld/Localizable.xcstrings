@@ -1,0 +1,1018 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "app.version" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ReverseWorldGo v%@ (%@)"
+          }
+        }
+      }
+    },
+    "auth.denied" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera access denied. Please enable in Settings."
+          }
+        }
+      }
+    },
+    "auth.denied.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Please enable camera access for ReverseWorldGo in Settings to use the mirror feature."
+          }
+        }
+      }
+    },
+    "auth.denied.settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Settings"
+          }
+        }
+      }
+    },
+    "auth.saved" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your mirror photo has been added to your photo library."
+          }
+        }
+      }
+    },
+    "common.cancel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cancel"
+          }
+        }
+      }
+    },
+    "common.ok" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OK"
+          }
+        }
+      }
+    },
+    "home.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "REVERSE WORLD"
+          }
+        }
+      }
+    },
+    "home.tagline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flip Reality. Reverse Rules."
+          }
+        }
+      }
+    },
+    "home.mirror.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirror World"
+          }
+        }
+      }
+    },
+    "home.mirror.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "See yourself reversed"
+          }
+        }
+      }
+    },
+    "home.translator.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse Translator"
+          }
+        }
+      }
+    },
+    "home.translator.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transform words backwards"
+          }
+        }
+      }
+    },
+    "home.stats.reverse_days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse Days"
+          }
+        }
+      }
+    },
+    "home.stats.rules_found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rules Found"
+          }
+        }
+      }
+    },
+    "home.stats.hint.days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Start your first"
+          }
+        }
+      }
+    },
+    "home.stats.hint.rules" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete a rule"
+          }
+        }
+      }
+    },
+    "home.today_rule_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TODAY'S REVERSE RULE"
+          }
+        }
+      }
+    },
+    "home.did_it" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "I Did It!"
+          }
+        }
+      }
+    },
+    "translator.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse Translator"
+          }
+        }
+      }
+    },
+    "translator.input" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ENTER TEXT"
+          }
+        }
+      }
+    },
+    "translator.placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Type something..."
+          }
+        }
+      }
+    },
+    "translator.output" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "REVERSED OUTPUT"
+          }
+        }
+      }
+    },
+    "translator.output.placeholder" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Your reversed text appears here..."
+          }
+        }
+      }
+    },
+    "translator.examples" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TRY THESE"
+          }
+        }
+      }
+    },
+    "translator.copy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copy"
+          }
+        }
+      }
+    },
+    "translator.copied" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Copied!"
+          }
+        }
+      }
+    },
+    "translator.mode.reverse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse"
+          }
+        }
+      }
+    },
+    "translator.mode.mirror" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirror"
+          }
+        }
+      }
+    },
+    "translator.mode.upside_down" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Upside Down"
+          }
+        }
+      }
+    },
+    "translator.mode.word_order" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Word Order"
+          }
+        }
+      }
+    },
+    "rules.today_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TODAY'S RULE"
+          }
+        }
+      }
+    },
+    "rules.countdown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@h %@m until new rule"
+          }
+        }
+      }
+    },
+    "rules.discovered" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "DISCOVERED RULES"
+          }
+        }
+      }
+    },
+    "rules.all" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ALL REVERSE RULES"
+          }
+        }
+      }
+    },
+    "rules.locked" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Locked"
+          }
+        }
+      }
+    },
+    "rules.discovered.badge" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Discovered"
+          }
+        }
+      }
+    },
+    "rules.confirm.mark_done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mark this rule as completed?"
+          }
+        }
+      }
+    },
+    "rules.confirm.message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Once marked, you can discover it in your collection."
+          }
+        }
+      }
+    },
+    "profile.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Profile"
+          }
+        }
+      }
+    },
+    "profile.achievements" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ACHIEVEMENTS"
+          }
+        }
+      }
+    },
+    "profile.achievements.empty" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Complete rules to unlock achievements"
+          }
+        }
+      }
+    },
+    "profile.premium" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "PREMIUM"
+          }
+        }
+      }
+    },
+    "profile.premium.active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "· ACTIVE"
+          }
+        }
+      }
+    },
+    "profile.premium.active.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Premium Active"
+          }
+        }
+      }
+    },
+    "profile.premium.unlock" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock Premium"
+          }
+        }
+      }
+    },
+    "profile.premium.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get 7-day free trial"
+          }
+        }
+      }
+    },
+    "profile.premium.description.active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All filters, ad-free, unlimited entries"
+          }
+        }
+      }
+    },
+    "profile.settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "SETTINGS"
+          }
+        }
+      }
+    },
+    "profile.restore" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Restore Purchases"
+          }
+        }
+      }
+    },
+    "profile.about" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "About"
+          }
+        }
+      }
+    },
+    "profile.dark_mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dark Mode"
+          }
+        }
+      }
+    },
+    "profile.notifications" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Daily Reminder"
+          }
+        }
+      }
+    },
+    "profile.contact" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Contact Us"
+          }
+        }
+      }
+    },
+    "profile.privacy" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Privacy Policy"
+          }
+        }
+      }
+    },
+    "profile.set_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Set your name"
+          }
+        }
+      }
+    },
+    "profile.edit_name" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Edit Username"
+          }
+        }
+      }
+    },
+    "profile.name_prompt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Username (3-20 chars)"
+          }
+        }
+      }
+    },
+    "profile.name_message" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Pick a name shown in your profile and shared reverse content."
+          }
+        }
+      }
+    },
+    "profile.save" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Save"
+          }
+        }
+      }
+    },
+    "profile.subtitle.start" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reversing starts today"
+          }
+        }
+      }
+    },
+    "profile.subtitle.day1" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Day 1 of reversing"
+          }
+        }
+      }
+    },
+    "profile.subtitle.n_days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ days reversing"
+          }
+        }
+      }
+    },
+    "profile.stats.reverse_days" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Reverse Days"
+          }
+        }
+      }
+    },
+    "profile.stats.rules_done" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Rules Done"
+          }
+        }
+      }
+    },
+    "profile.stats.mirror_min" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirror Min"
+          }
+        }
+      }
+    },
+    "paywall.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlock Premium"
+          }
+        }
+      }
+    },
+    "paywall.subtitle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Get 7-day free trial, then %@/month"
+          }
+        }
+      }
+    },
+    "paywall.yearly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Yearly"
+          }
+        }
+      }
+    },
+    "paywall.yearly.value" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best value • %@/year"
+          }
+        }
+      }
+    },
+    "paywall.yearly.fallback" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Best value • $29.99/year"
+          }
+        }
+      }
+    },
+    "paywall.monthly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monthly"
+          }
+        }
+      }
+    },
+    "paywall.monthly.fallback" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "$0.99/month"
+          }
+        }
+      }
+    },
+    "paywall.popular" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "POPULAR"
+          }
+        }
+      }
+    },
+    "paywall.close" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close"
+          }
+        }
+      }
+    },
+    "paywall.feature.filters" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All mirror filters unlocked"
+          }
+        }
+      }
+    },
+    "paywall.feature.translator" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "All reverse translator modes"
+          }
+        }
+      }
+    },
+    "paywall.feature.journal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unlimited reverse journal entries"
+          }
+        }
+      }
+    },
+    "paywall.feature.rules" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Priority rule updates"
+          }
+        }
+      }
+    },
+    "paywall.feature.noads" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ad-free experience"
+          }
+        }
+      }
+    },
+    "about.tagline" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flip reality. Reverse rules. Experience the world differently."
+          }
+        }
+      }
+    },
+    "auth.open_settings_prompt" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Camera Access Denied"
+          }
+        }
+      }
+    },
+    "mirror.placeholder.tap" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Tap to enable camera"
+          }
+        }
+      }
+    },
+    "mirror.tip.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirror Tip"
+          }
+        }
+      }
+    },
+    "mirror.tip.body" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Use your non-dominant hand in mirror to challenge your brain!"
+          }
+        }
+      }
+    },
+    "mirror.mirrored" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirrored"
+          }
+        }
+      }
+    },
+    "mirror.normal" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Normal"
+          }
+        }
+      }
+    },
+    "mirror.flip" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Flip"
+          }
+        }
+      }
+    },
+    "restore.success" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "✅ Premium restored successfully"
+          }
+        }
+      }
+    },
+    "restore.not_found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No previous purchases found for this Apple ID"
+          }
+        }
+      }
+    },
+    "purchase.cancelled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Purchase cancelled"
+          }
+        }
+      }
+    },
+    "stats.mirror_minutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mirror Min"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

@@ -15,7 +15,7 @@ struct HomeView: View {
                     VStack(spacing: Theme.Layout.sectionSpacing) {
                         // H1: Header with opacity glow (was forced rotation animation)
                         VStack(spacing: 8) {
-                            Text("REVERSE WORLD")
+                            Text(L10n.homeTitle)
                                 .font(.system(size: 28, weight: .bold, design: .rounded))  // 28 instead of 32 to prevent truncation
                                 .foregroundStyle(
                                     LinearGradient(
@@ -30,7 +30,7 @@ struct HomeView: View {
                                 .lineLimit(1)  // explicit: keep on one line
                                 .minimumScaleFactor(0.7)  // shrink if needed on narrow screens
 
-                            Text("Flip Reality. Reverse Rules.")
+                            Text(L10n.homeTagline)
                                 .font(.subheadline)
                                 .foregroundColor(Theme.Text.secondary)
                         }
@@ -42,8 +42,8 @@ struct HomeView: View {
                         } label: {
                             ReverseCard(
                                 icon: "camera.viewfinder",
-                                title: "Mirror World",
-                                subtitle: "See yourself reversed",
+                                title: L10n.homeMirrorTitle,
+                                subtitle: L10n.homeMirrorSubtitle,
                                 gradient: [Color.purple, Color.blue]
                             )
                         }
@@ -55,8 +55,8 @@ struct HomeView: View {
                         } label: {
                             ReverseCard(
                                 icon: "text.bubble.fill",
-                                title: "Reverse Translator",
-                                subtitle: "Transform words backwards",
+                                title: L10n.homeTranslatorTitle,
+                                subtitle: L10n.homeTranslatorSubtitle,
                                 gradient: [Color.green, Color.cyan]
                             )
                         }
@@ -69,15 +69,15 @@ struct HomeView: View {
                         HStack(spacing: 20) {
                             StatBox(
                                 value: "\(statsManager.reverseDays)",
-                                label: "Reverse Days",
+                                label: L10n.statReverseDays,
                                 icon: "calendar.badge.clock",
-                                hint: statsManager.reverseDays == 0 ? "Start your first" : nil
+                                hint: statsManager.reverseDays == 0 ? L10n.statStartYourFirst : nil
                             )
                             StatBox(
                                 value: "\(statsManager.rulesDiscovered)",
-                                label: "Rules Found",
+                                label: L10n.statRulesFound,
                                 icon: "scroll.fill",
-                                hint: statsManager.rulesDiscovered == 0 ? "Complete a rule" : nil
+                                hint: statsManager.rulesDiscovered == 0 ? L10n.statCompleteARule : nil
                             )
                         }
                         .padding(.horizontal)
@@ -95,7 +95,7 @@ struct HomeView: View {
     private var todaysRuleCard: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("TODAY'S REVERSE RULE")
+                Text(L10n.homeTodayRuleLabel)
                     .font(.caption)
                     .fontWeight(.bold)
                     .foregroundColor(Theme.Accent.warning)
@@ -129,7 +129,7 @@ struct HomeView: View {
                 ruleManager.completeCurrentRule()
                 statsManager.unlockAchievement(name: "First Rule", icon: "scroll.fill")
             } label: {
-                Text("I Did It!")
+                Text(L10n.homeDidIt)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundColor(.black)

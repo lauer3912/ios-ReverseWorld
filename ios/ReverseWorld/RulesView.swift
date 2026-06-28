@@ -30,10 +30,10 @@ struct RulesView: View {
             .navigationBarTitleDisplayMode(.inline)
             // R4: confirmation dialog before completing
             .confirmationDialog("Mark this rule as completed?", isPresented: $showCompleteConfirm, titleVisibility: .visible) {
-                Button("I Did It!") {
+                Button(L10n.homeDidIt) {
                     ruleManager.completeCurrentRule()
                 }
-                Button("Cancel", role: .cancel) {}
+                Button(L10n.cancel, role: .cancel) {}
             } message: {
                 Text("Once marked, you can discover it in your collection.")
             }
@@ -47,7 +47,7 @@ struct RulesView: View {
     private var todaysRuleCard: some View {
         VStack(spacing: 16) {
             HStack {
-                Text("TODAY'S RULE")
+                Text(L10n.rulesTodayLabel)
                     .font(.caption)
                     .fontWeight(.black)
                     .foregroundColor(Theme.Accent.warning)
@@ -106,7 +106,7 @@ struct RulesView: View {
         } label: {
             HStack {
                 Image(systemName: "checkmark.circle.fill")
-                Text("I Did It!")
+                Text(L10n.homeDidIt)
             }
             .font(.headline)
             .foregroundColor(.black)
@@ -124,7 +124,7 @@ struct RulesView: View {
     private var rulesDiscovery: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack {
-                Text("DISCOVERED RULES")
+                Text(L10n.rulesDiscoveredLabel)
                     .font(.caption)
                     .fontWeight(.bold)
                     .foregroundColor(.cyan)
@@ -158,7 +158,7 @@ struct RulesView: View {
                 showAllRules.toggle()
             } label: {
                 HStack {
-                    Text("ALL REVERSE RULES")
+                    Text(L10n.rulesAllLabel)
                         .font(.caption)
                         .fontWeight(.bold)
                         .foregroundColor(.purple)
@@ -230,7 +230,7 @@ struct RuleMiniCard: View {
                     .font(.caption)
                     .foregroundColor(isDiscovered ? Theme.Accent.success : Theme.Text.tertiary)
                 if !isDiscovered {
-                    Text("Locked")
+                    Text(L10n.rulesLocked)
                         .font(.system(size: 8, weight: .bold))
                         .padding(.horizontal, 4)
                         .padding(.vertical, 1)
@@ -320,7 +320,7 @@ struct RuleDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Close") { dismiss() }
+                    Button(L10n.paywallClose) { dismiss() }
                         .foregroundColor(Theme.Text.primary)
                 }
             }

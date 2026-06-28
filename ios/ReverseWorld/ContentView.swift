@@ -37,7 +37,7 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .navigationTitle("ReverseWorldGo")
+                    .navigationTitle(L10n.appName)
                     .listStyle(.sidebar)
                 } detail: {
                     selectedTab.view
@@ -59,7 +59,7 @@ struct ContentView: View {
                 .tabItem { Label("Home", systemImage: "house.fill") }
                 .tag(Tab.home)
             MirrorView()
-                .tabItem { Label("Mirror", systemImage: "camera.fill") }
+                .tabItem { Label(L10n.translatorModeMirror, systemImage: "camera.fill") }
                 .tag(Tab.mirror)
             TranslatorView()
                 .tabItem { Label("Translate", systemImage: "text.bubble.fill") }
@@ -68,7 +68,7 @@ struct ContentView: View {
                 .tabItem { Label("Rules", systemImage: "scroll.fill") }
                 .tag(Tab.rules)
             ProfileView()
-                .tabItem { Label("Profile", systemImage: "person.fill") }
+                .tabItem { Label(L10n.profileTitle, systemImage: "person.fill") }
                 .tag(Tab.profile)
         }
     }
@@ -80,10 +80,10 @@ enum Tab: String, CaseIterable, Hashable {
     var displayName: String {
         switch self {
         case .home: return "Home"
-        case .mirror: return "Mirror"
+        case .mirror: return L10n.translatorModeMirror
         case .translate: return "Translate"
         case .rules: return "Rules"
-        case .profile: return "Profile"
+        case .profile: return L10n.profileTitle
         }
     }
 

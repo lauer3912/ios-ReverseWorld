@@ -52,7 +52,7 @@ struct MirrorView: View {
                                         Image(systemName: "camera.fill")
                                             .font(.system(size: 60))
                                             .foregroundColor(Theme.Text.disabled)
-                                        Text(camera.error ?? "Tap to enable camera")
+                                        Text(camera.error ?? L10n.mirrorTapToEnable)
                                             .font(.caption)
                                             .foregroundColor(Theme.Text.tertiary)
                                             .multilineTextAlignment(.center)
@@ -98,7 +98,7 @@ struct MirrorView: View {
                             VStack {
                                 Image(systemName: isMirrored ? "arrow.left.and.right.righttriangle.left.righttriangle.right.fill" : "arrow.left.and.right.righttriangle.left.righttriangle.right")
                                     .font(.title)
-                                Text(isMirrored ? "Mirrored" : "Normal")
+                                Text(isMirrored ? L10n.mirrorMirrored : L10n.mirrorNormal)
                                     .font(.caption)
                             }
                             .foregroundColor(Theme.Text.primary)
@@ -130,7 +130,7 @@ struct MirrorView: View {
                             VStack {
                                 Image(systemName: "camera.rotate.fill")
                                     .font(.title)
-                                Text("Flip")
+                                Text(L10n.mirrorFlip)
                                     .font(.caption)
                             }
                             .foregroundColor(Theme.Text.primary)
@@ -146,11 +146,11 @@ struct MirrorView: View {
                     Spacer()
 
                     VStack(spacing: 8) {
-                        Text("Mirror Tip")
+                        Text(L10n.mirrorTipTitle)
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(Theme.Accent.warning)
-                        Text("Use your non-dominant hand in mirror to challenge your brain!")
+                        Text(L10n.mirrorTipBody)
                             .font(.caption)
                             .foregroundColor(Theme.Text.secondary)
                             .multilineTextAlignment(.center)
@@ -161,25 +161,25 @@ struct MirrorView: View {
                     .padding(.horizontal)
                 }
             }
-            .navigationTitle("Mirror World")
+            .navigationTitle(L10n.homeMirrorTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar(.hidden, for: .navigationBar)  // M7: hide nav bar in this nested view
             // M2: photo saved alert
-            .alert("Saved to Photos", isPresented: $showSavedAlert) {
-                Button("OK", role: .cancel) {}
+            .alert(L10n.mirrorSavedTitle, isPresented: $showSavedAlert) {
+                Button(L10n.ok, role: .cancel) {}
             } message: {
-                Text("Your mirror photo has been added to your photo library.")
+                Text(L10n.mirrorSavedMessage)
             }
             // M1: redirect to Settings when permanently denied
-            .alert("Camera Access Denied", isPresented: $showPermissionAlert) {
-                Button("Open Settings") {
+            .alert(L10n.mirrorAuthDeniedTitle, isPresented: $showPermissionAlert) {
+                Button(L10n.mirrorAuthDeniedSettings) {
                     if let url = URL(string: UIApplication.openSettingsURLString) {
                         openURL(url)
                     }
                 }
-                Button("Cancel", role: .cancel) {}
+                Button(L10n.cancel, role: .cancel) {}
             } message: {
-                Text("Please enable camera access for ReverseWorldGo in Settings to use the mirror feature.")
+                Text(L10n.mirrorAuthDeniedMessage)
             }
         }
     }

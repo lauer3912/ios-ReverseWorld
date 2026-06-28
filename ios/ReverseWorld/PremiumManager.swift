@@ -19,9 +19,12 @@ final class PremiumManager: ObservableObject {
         case failed(String)
     }
 
-    // Product IDs from AppStore/Listing.md
-    static let monthlyProductID = "com.ggsheng.ReverseWorld.premium_monthly"
-    static let yearlyProductID = "com.ggsheng.ReverseWorld.premium_yearly"
+    // Product IDs from App Store Connect (TitleCase to match ASC)
+    // R5-1 fix: code used lowercase 'premium_monthly' but ASC has 'PremiumMonthly' (TitleCase).
+    // Product ID lookup is case-sensitive, so users could NEVER purchase.
+    // Now matches ASC exactly: com.ggsheng.ReverseWorld.PremiumMonthly
+    static let monthlyProductID = "com.ggsheng.ReverseWorld.PremiumMonthly"
+    static let yearlyProductID = "com.ggsheng.ReverseWorld.PremiumYearly"
 
     private var transactionListener: Task<Void, Never>?
 

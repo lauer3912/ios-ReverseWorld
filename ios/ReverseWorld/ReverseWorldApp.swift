@@ -42,13 +42,16 @@ class RuleManager: ObservableObject {
     }
 
     func completeCurrentRule() {
-        let newRule = ReverseRule(
+        // BUGFIX: previously created newRule with new UUID but checked currentRule.id
+        // (different UUID), so nothing was ever appended. Now preserve the same id.
+        let completedRule = ReverseRule(
+            id: currentRule.id,
             title: currentRule.title,
             description: currentRule.description,
             isCompleted: true
         )
         if !ruleHistory.contains(where: { $0.id == currentRule.id }) {
-            ruleHistory.append(newRule)
+            ruleHistory.append(completedRule)
             saveHistory()
         }
         refreshRule()

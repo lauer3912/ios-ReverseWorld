@@ -10,12 +10,18 @@ struct TranslatorView: View {
     @State private var cachedWordOrder: String = ""
 
     enum ReverseMode: String, CaseIterable, Identifiable {
-        case reverse = "Reverse"
-        case mirror = "Mirror"      // T3: real character-level mirror (was duplicated logic)
-        case upsideDown = "Upside Down"
-        case wordOrder = "Word Order"
+        case reverse, mirror, upsideDown, wordOrder
 
         var id: String { rawValue }
+
+        var displayName: String {
+            switch self {
+            case .reverse: return L10n.translatorModeReverse
+            case .mirror: return L10n.translatorModeMirror
+            case .upsideDown: return L10n.translatorModeUpsideDown
+            case .wordOrder: return L10n.translatorModeWordOrder
+            }
+        }
 
         var icon: String {
             switch self {
@@ -39,13 +45,13 @@ struct TranslatorView: View {
                         .padding(.top, 10)
 
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("ENTER TEXT")
+                        Text(L10n.translatorInput)
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.purple)
                             .accessibilityAddTraits(.isHeader)
 
-                        TextField("Type something...", text: $inputText, axis: .vertical)
+                        TextField(L10n.translatorPlaceholder, text: $inputText, axis: .vertical)
                             .textFieldStyle(.plain)
                             .padding()
                             .background(Theme.Background.card)
@@ -58,7 +64,7 @@ struct TranslatorView: View {
 
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
-                            Text("REVERSED OUTPUT")
+                            Text(L10n.translatorOutput)
                                 .font(.caption)
                                 .fontWeight(.bold)
                                 .foregroundColor(Theme.Accent.warning)
@@ -70,7 +76,7 @@ struct TranslatorView: View {
                                 UIPasteboard.general.string = currentOutput
                                 copied = true
                             } label: {
-                                Label(copied ? "Copied!" : "Copy", systemImage: copied ? "checkmark" : "doc.on.doc")
+                                Label(copied ? L10n.translatorCopied : L10n.translatorCopy, systemImage: copied ? "checkmark" : "doc.on.doc")
                                     .font(.caption)
                                     .foregroundColor(copied ? Theme.Accent.success : Theme.Text.primary)
                             }
@@ -85,7 +91,7 @@ struct TranslatorView: View {
                             }
                         }
 
-                        Text(currentOutput.isEmpty ? "Your reversed text appears here..." : currentOutput)
+                        Text(currentOutput.isEmpty ? L10n.translatorOutputPlaceholder : currentOutput)
                             .font(.title2)
                             .fontWeight(.semibold)
                             .foregroundColor(currentOutput.isEmpty ? Theme.Text.disabled : Theme.Text.primary)
@@ -102,7 +108,7 @@ struct TranslatorView: View {
                     .padding(.horizontal)
 
                     VStack(alignment: .leading, spacing: 12) {
-                        Text("TRY THESE")
+                        Text(L10n.translatorExamples)
                             .font(.caption)
                             .fontWeight(.bold)
                             .foregroundColor(.cyan)
@@ -130,7 +136,7 @@ struct TranslatorView: View {
                 }
                 .padding(.bottom, 20)
             }
-            .navigationTitle("Reverse Translator")
+            .navigationTitle(L10n.homeTranslatorTitle)
             .navigationBarTitleDisplayMode(.inline)
         }
     }
@@ -145,7 +151,7 @@ struct TranslatorView: View {
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: mode.icon)
-                            Text(mode.rawValue)
+                            Text(mode.displayName)
                         }
                         .font(.caption)
                         .padding(.horizontal, 16)
@@ -154,7 +160,7 @@ struct TranslatorView: View {
                         .foregroundColor(Theme.Text.primary)
                         .clipShape(Capsule())
                     }
-                    .accessibilityLabel("\(mode.rawValue) mode\(selectedMode == mode ? ", selected" : "")")
+                    .accessibilityLabel("\(mode.displayName) mode\(selectedMode == mode ? ", selected" : "")")
                 }
             }
             .padding(.horizontal)

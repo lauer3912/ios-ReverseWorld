@@ -129,15 +129,15 @@ Mirror your world. Reverse your text. Discover parallel realities. Download Reve
 
 > 截图文件位于 `AppStore/Screenshots/` 目录下
 
-### iPhone 6.9" (1320×2868)
+### iPhone 6.7" (1290×2796) — R5-9 fix: was wrongly labeled 6.9" in code; actual file is 6.7"
 
 | 序号 | 页面名称 | 文件名 | 尺寸 |
 |------|---------|--------|------|
-| 01 | Home / Daily Rule | 01_Home.png | 1320×2868 |
-| 02 | Mirror Camera | 02_Mirror.png | 1320×2868 |
-| 03 | Reverse Translator | 03_Translate.png | 1320×2868 |
-| 04 | Daily Rules | 04_Rules.png | 1320×2868 |
-| 05 | Profile / Settings | 05_Profile.png | 1320×2868 |
+| 01 | Home / Daily Rule | 01_Home.png | 1290×2796 |
+| 02 | Mirror Camera | 02_Mirror.png | 1290×2796 |
+| 03 | Reverse Translator | 03_Translate.png | 1290×2796 |
+| 04 | Daily Rules | 04_Rules.png | 1290×2796 |
+| 05 | Profile / Settings | 05_Profile.png | 1290×2796 |
 
 ### iPad 12.9" (2048×2732)
 
