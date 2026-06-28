@@ -4,7 +4,6 @@ import SwiftUI
 struct ReverseWorldApp: App {
     @StateObject private var ruleManager = RuleManager()
     @StateObject private var statsManager = StatsManager()
-    @StateObject private var premiumManager = PremiumManager.shared  // P3: use shared singleton as @StateObject
     @AppStorage("isDarkMode") private var isDarkMode = true
 
     init() {
@@ -18,7 +17,7 @@ struct ReverseWorldApp: App {
             ContentView()
                 .environmentObject(ruleManager)
                 .environmentObject(statsManager)
-                .environmentObject(premiumManager)  // P3: inject at root
+                .environmentObject(PremiumManager.shared)  // 修复: 不要 @StateObject wrap shared singleton (SwiftUI anti-pattern 导致 AG::precondition_failure)
                 .preferredColorScheme(isDarkMode ? .dark : .light)
         }
     }
