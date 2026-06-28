@@ -6,12 +6,22 @@ class ReverseNotificationService {
 
     private init() {}
 
+    /// N1: log via OSLog instead of print() (no more TestFlight console leak)
     func requestAuthorization(completion: @escaping (Bool) -> Void) {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
             if let error = error {
-                print("Notification authorization error: \(error)")
+                AppLog.notification.error("Authorization error: \(error.localizedDescription, privacy: .public)")
             }
             completion(granted)
+        }
+    }
+
+    /// N3: query current notification settings to keep App state in sync with iOS Settings
+    func currentSettings(completion: @escaping (UNAuthorizationStatus) -> Void) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            DispatchQueue.main.async {
+                completion(settings.authorizationStatus)
+            }
         }
     }
 
@@ -31,27 +41,7 @@ class ReverseNotificationService {
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("Failed to schedule daily rule reminder: \(error)")
-            }
-        }
-    }
-
-    func scheduleStreakReminder(consecutiveDays: Int) {
-        let content = UNMutableNotificationContent()
-        content.title = "Don't Break the Chain! 🔗"
-        content.body = "You've been reversing for \(consecutiveDays) days. Keep your reverse streak alive!"
-        content.sound = .default
-
-        var dateComponents = DateComponents()
-        dateComponents.hour = 20
-        dateComponents.minute = 0
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: false)
-        let request = UNNotificationRequest(identifier: "streak_reminder", content: content, trigger: trigger)
-
-        UNUserNotificationCenter.current().add(request) { error in
-            if let error = error {
-                print("Failed to schedule streak reminder: \(error)")
+                AppLog.notification.error("Schedule daily rule failed: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
@@ -67,7 +57,7 @@ class ReverseNotificationService {
 
         UNUserNotificationCenter.current().add(request) { error in
             if let error = error {
-                print("Failed to schedule achievement notification: \(error)")
+                AppLog.notification.error("Schedule achievement failed: \(error.localizedDescription, privacy: .public)")
             }
         }
     }

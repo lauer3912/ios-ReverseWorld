@@ -10,9 +10,6 @@ struct CameraPreview: UIViewRepresentable {
         let view = PreviewView()
         view.videoPreviewLayer.session = camera.session
         view.videoPreviewLayer.videoGravity = .resizeAspectFill
-        if camera.connection != nil {
-            camera.attachPreview()
-        }
         return view
     }
 
@@ -35,12 +32,13 @@ struct CameraPreview: UIViewRepresentable {
 /// Camera controller managing AVCaptureSession
 final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureDelegate {
     @Published var isAuthorized: Bool = false
+    @Published var isPermanentlyDenied: Bool = false  // M1: differentiate denied from notDetermined
     @Published var isFrontCamera: Bool = true
     @Published var capturedImage: UIImage?
     @Published var error: String?
+    @Published var useFlash: Bool = false  // C3: flash toggle
 
     let session = AVCaptureSession()
-    var connection: AVCaptureConnection?
 
     private let sessionQueue = DispatchQueue(label: "ReverseWorld.CameraSessionQueue")
     private var photoOutput: AVCapturePhotoOutput?
@@ -55,17 +53,24 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
         switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
             isAuthorized = true
+            isPermanentlyDenied = false
             configureSession()
         case .notDetermined:
+            isPermanentlyDenied = false
             AVCaptureDevice.requestAccess(for: .video) { [weak self] granted in
                 DispatchQueue.main.async {
                     self?.isAuthorized = granted
                     if granted { self?.configureSession() }
                 }
             }
-        default:
+        case .denied, .restricted:
+            // M1: explicitly mark as permanently denied so UI can offer Settings shortcut
             isAuthorized = false
+            isPermanentlyDenied = true
             error = "Camera access denied. Please enable in Settings."
+        @unknown default:
+            isAuthorized = false
+            isPermanentlyDenied = true
         }
     }
 
@@ -75,7 +80,6 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
             self.session.beginConfiguration()
             self.session.sessionPreset = .photo
 
-            // Add photo output
             let photoOutput = AVCapturePhotoOutput()
             if self.session.canAddOutput(photoOutput) {
                 self.session.addOutput(photoOutput)
@@ -97,25 +101,15 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
               let input = try? AVCaptureDeviceInput(device: camera),
               session.canAddInput(input) else {
             session.commitConfiguration()
+            // C2: publish error instead of silent return
+            DispatchQueue.main.async { [weak self] in
+                self?.error = "Could not access camera in this position"
+            }
             return
         }
         session.addInput(input)
         currentInput = input
         session.commitConfiguration()
-    }
-
-    func attachPreview() {
-        // Configure connection mirroring
-        sessionQueue.async { [weak self] in
-            guard let self = self else { return }
-            // Find video connection and set mirroring
-            if let videoOutput = self.session.outputs.first as? AVCaptureVideoDataOutput {
-                self.connection = videoOutput.connection(with: .video)
-            } else {
-                // For photo output, we don't need a connection
-                self.connection = nil
-            }
-        }
     }
 
     func flipCamera() {
@@ -128,12 +122,19 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
     func capturePhoto() {
         guard let photoOutput = photoOutput else { return }
         let settings = AVCapturePhotoSettings()
-        settings.flashMode = .off
+        // C3: respect user flash preference
+        if useFlash && photoOutput.supportedFlashModes.contains(.on) {
+            settings.flashMode = .on
+        } else {
+            settings.flashMode = .off
+        }
+        // C4: weak delegate would not work for AVCapturePhotoCaptureDelegate, but we set the controller as its own delegate
         photoOutput.capturePhoto(with: settings, delegate: self)
     }
 
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
         if let error = error {
+            AppLog.camera.error("Capture failed: \(error.localizedDescription, privacy: .public)")
             DispatchQueue.main.async { [weak self] in
                 self?.error = "Capture failed: \(error.localizedDescription)"
             }
@@ -143,7 +144,6 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
               let image = UIImage(data: data) else { return }
         DispatchQueue.main.async { [weak self] in
             self?.capturedImage = image
-            // Save to photo library
             UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
         }
     }

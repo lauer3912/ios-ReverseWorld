@@ -4,9 +4,9 @@ import SwiftUI
 struct ReverseWorldApp: App {
     @StateObject private var ruleManager = RuleManager()
     @StateObject private var statsManager = StatsManager()
+    @StateObject private var premiumManager = PremiumManager.shared  // P3: use shared singleton as @StateObject
     @AppStorage("isDarkMode") private var isDarkMode = true
 
-    // Honor -forceDarkMode launch arg for XCUITest screenshot generation
     init() {
         if CommandLine.arguments.contains("-forceDarkMode") {
             UserDefaults.standard.set(true, forKey: "isDarkMode")
@@ -18,6 +18,7 @@ struct ReverseWorldApp: App {
             ContentView()
                 .environmentObject(ruleManager)
                 .environmentObject(statsManager)
+                .environmentObject(premiumManager)  // P3: inject at root
                 .preferredColorScheme(isDarkMode ? .dark : .light)
         }
     }
@@ -27,26 +28,18 @@ class RuleManager: ObservableObject {
     @Published var currentRule: ReverseRule
     @Published var ruleHistory: [ReverseRule] = []
 
-    private let rules = [
-        ReverseRule(title: "Walk backwards to move forward", description: "Today, every step backward takes you further ahead."),
-        ReverseRule(title: "Speak in reverse sentences", description: "Form your sentences in reverse word order."),
-        ReverseRule(title: "Read everything backwards", description: "Start from the end of text to understand the beginning."),
-        ReverseRule(title: "Use your non-dominant hand", description: "Switch hands for all tasks today."),
-        ReverseRule(title: "Reverse your daily routine", description: "Do everything in opposite order today."),
-        ReverseRule(title: "Think opposite", description: "For every thought, consider the reverse."),
-        ReverseRule(title: "Write with your eyes closed", description: "Let your hand write without seeing."),
-        ReverseRule(title: "Speak in questions only", description: "Only ask questions, never make statements."),
-    ]
-
     private let historyKey = "ruleHistory"
 
     init() {
-        currentRule = rules.randomElement() ?? rules[0]
+        // R2: deterministic daily rotation via RuleData.ruleForToday()
+        currentRule = RuleData.ruleForToday()
         loadHistory()
     }
 
     func refreshRule() {
-        currentRule = rules.randomElement() ?? rules[0]
+        // R2: same logic — pick next day's rule (not random)
+        let tomorrow = Date().addingTimeInterval(86400)
+        currentRule = RuleData.ruleForToday(now: tomorrow)
     }
 
     func completeCurrentRule() {
@@ -94,7 +87,7 @@ class StatsManager: ObservableObject {
     @Published var reverseDays: Int = 0
     @Published var rulesDiscovered: Int = 0
     @Published var mirrorTimeMinutes: Int = 0
-    @Published var achievements: [Achievement] = []
+    @Published var achievements: [Achievement] = []  // P9: now persisted
 
     init() {
         loadStats()
@@ -103,6 +96,26 @@ class StatsManager: ObservableObject {
     func incrementReverseDays() {
         reverseDays += 1
         saveStats()
+    }
+
+    func incrementMirrorTime() {
+        mirrorTimeMinutes += 1
+        saveStats()
+    }
+
+    func addRuleDiscovery() {
+        rulesDiscovered += 1
+        saveStats()
+    }
+
+    /// P9: unlock achievement
+    func unlockAchievement(name: String, icon: String) {
+        if !achievements.contains(where: { $0.name == name }) {
+            achievements.append(Achievement(name: name, icon: icon, isUnlocked: true))
+            saveStats()
+            // Trigger achievement notification
+            ReverseNotificationService.shared.scheduleAchievementNotification(achievement: name)
+        }
     }
 
     private func loadStats() {

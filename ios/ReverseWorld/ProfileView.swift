@@ -4,168 +4,47 @@ import StoreKit
 struct ProfileView: View {
     @EnvironmentObject var statsManager: StatsManager
     @EnvironmentObject var ruleManager: RuleManager
+    @EnvironmentObject var premiumManager: PremiumManager
+    @Environment(\.openURL) private var openURL
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("isNotificationsEnabled") private var isNotificationsEnabled = false
-    @AppStorage("username") private var username = "ReverseKing"
+    @AppStorage("username") private var username = ""  // P5: empty default, force user to set
     @State private var showEditName = false
+    @State private var showRestoreAlert = false
+    @State private var restoreMessage = ""
 
-    let achievements = [
-        ("7 Day Streak", "flame.fill", 7),
-        ("Mirror Master", "camera.viewfinder", 1),
-        ("Rule Discoverer", "scroll.fill", 3),
-        ("Word Reverser", "text.bubble.fill", 1),
-        ("Reverse Legend", "star.fill", 5),
-    ]
+    // P9: Achievements now come from StatsManager (persisted)
+    private var achievements: [Achievement] {
+        statsManager.achievements
+    }
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "0a0a1a")
+                Theme.Background.primary
                     .ignoresSafeArea()
 
                 ScrollView {
-                    VStack(spacing: 24) {
+                    VStack(spacing: Theme.Layout.sectionSpacing) {
                         // Profile Header
-                        VStack(spacing: 16) {
-                            // Avatar with mirror effect
-                            ZStack {
-                                Circle()
-                                    .fill(
-                                        LinearGradient(colors: [.purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                    )
-                                    .frame(width: 100, height: 100)
-
-                                Image(systemName: "person.fill")
-                                    .font(.system(size: 50))
-                                    .foregroundColor(.white)
-
-                                // Mirror reflection effect
-                                Circle()
-                                    .fill(
-                                        LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
-                                    )
-                                    .frame(width: 30, height: 30)
-                                    .offset(x: 35, y: -35)
-                                    .mask(
-                                        Circle()
-                                            .frame(width: 100, height: 100)
-                                            .scaleEffect(x: -1, y: 1)
-                                    )
-                            }
-                            .scaleEffect(x: -1, y: 1) // Mirror the whole avatar
-
-                            VStack(spacing: 4) {
-                                Button {
-                                    showEditName = true
-                                } label: {
-                                    HStack {
-                                        Text("@\(username)")
-                                            .font(.title2)
-                                            .fontWeight(.bold)
-                                            .foregroundColor(.white)
-                                        Image(systemName: "pencil")
-                                            .font(.caption)
-                                            .foregroundColor(.white.opacity(0.6))
-                                    }
-                                }
-
-                                Text("Reversing since day one")
-                                    .font(.caption)
-                                    .foregroundColor(.white.opacity(0.5))
-                            }
-                        }
-                        .padding(.top, 20)
+                        profileHeader
 
                         // Stats Cards
-                        HStack(spacing: 16) {
-                            ProfileStatCard(value: "\(statsManager.reverseDays)", label: "Reverse Days", icon: "calendar.badge.clock", color: .orange)
-                            ProfileStatCard(value: "\(ruleManager.ruleHistory.count)", label: "Rules Done", icon: "scroll.fill", color: .yellow)
-                            ProfileStatCard(value: "\(statsManager.mirrorTimeMinutes)", label: "Mirror Min", icon: "camera.viewfinder", color: .purple)
-                        }
-                        .padding(.horizontal)
+                        statsRow
 
                         // Achievements
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("ACHIEVEMENTS")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(.yellow)
-                                .padding(.horizontal)
-
-                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 12) {
-                                ForEach(achievements, id: \.0) { achievement in
-                                    AchievementBadge(name: achievement.0, icon: achievement.1, level: achievement.2)
-                                }
-                            }
-                            .padding(.horizontal)
-                        }
+                        achievementsSection
 
                         // Premium Section
-                        PremiumSection()
+                        premiumSection
 
                         // Settings Section
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("SETTINGS")
-                                .font(.caption)
-                                .fontWeight(.bold)
-                                .foregroundColor(.cyan)
-                                .padding(.horizontal)
+                        settingsSection
 
-                            VStack(spacing: 0) {
-                                SettingsRow(icon: "moon.fill", title: "Dark Mode", color: .purple) {
-                                    Toggle("", isOn: $isDarkMode)
-                                        .labelsHidden()
-                                }
-
-                                Divider().background(Color.white.opacity(0.1))
-
-                                SettingsRow(icon: "bell.fill", title: "Daily Reminder", color: .yellow) {
-                                    Toggle("", isOn: $isNotificationsEnabled)
-                                        .labelsHidden()
-                                        .onChange(of: isNotificationsEnabled) { _, newValue in
-                                            if newValue {
-                                                ReverseNotificationService.shared.requestAuthorization { granted in
-                                                    if granted {
-                                                        ReverseNotificationService.shared.scheduleDailyRuleReminder()
-                                                    }
-                                                }
-                                            } else {
-                                                ReverseNotificationService.shared.cancelNotification(identifier: "daily_rule")
-                                            }
-                                        }
-                                }
-
-                                Divider().background(Color.white.opacity(0.1))
-
-                                NavigationLink {
-                                    PrivacyPolicyView()
-                                } label: {
-                                    SettingsRow(icon: "hand.raised.fill", title: "Privacy Policy", color: .blue, showChevron: true) {}
-                                }
-
-                                Divider().background(Color.white.opacity(0.1))
-
-                                Link(destination: URL(string: "mailto:support@techidaily.com")!) {
-                                    SettingsRow(icon: "envelope.fill", title: "Contact Us", color: .green, showChevron: true) {}
-                                }
-
-                                Divider().background(Color.white.opacity(0.1))
-
-                                NavigationLink {
-                                    AboutView()
-                                } label: {
-                                    SettingsRow(icon: "info.circle.fill", title: "About", color: .orange, showChevron: true) {}
-                                }
-                            }
-                            .background(Color(hex: "1a0a2e"))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                            .padding(.horizontal)
-                        }
-
-                        // Version
-                        Text("ReverseWorldGo v3.0.0")
+                        // Version (P1: derive from Bundle.main)
+                        Text("ReverseWorldGo v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
                             .font(.caption)
-                            .foregroundColor(.white.opacity(0.3))
+                            .foregroundColor(Theme.Text.disabled)
                             .padding(.top, 20)
                     }
                     .padding(.bottom, 40)
@@ -174,10 +53,210 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)
             .alert("Edit Username", isPresented: $showEditName) {
-                TextField("Username", text: $username)
-                Button("Save") {}
+                TextField("Username (3-20 chars)", text: $username)
+                    .textInputAutocapitalization(.never)
+                Button("Save") { validateAndSaveName() }
+                    .disabled(!isUsernameValid)
                 Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Pick a name shown in your profile and shared reverse content.")
             }
+            .alert("Restore Purchases", isPresented: $showRestoreAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(restoreMessage)
+            }
+        }
+    }
+
+    // MARK: - Sub-views
+
+    private var profileHeader: some View {
+        VStack(spacing: 16) {
+            // Avatar (P10: removed scaleEffect(x: -1) which made the whole icon unreadable)
+            ZStack {
+                Circle()
+                    .fill(
+                        LinearGradient(colors: [.purple, .blue], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    )
+                    .frame(width: 100, height: 100)
+
+                Image(systemName: "person.fill")
+                    .font(.system(size: 50))
+                    .foregroundColor(.white)
+            }
+            .accessibilityLabel("Profile avatar")
+
+            VStack(spacing: 4) {
+                Button {
+                    showEditName = true
+                } label: {
+                    HStack {
+                        Text(username.isEmpty ? "Set your name" : "@\(username)")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .foregroundColor(username.isEmpty ? Theme.Text.tertiary : Theme.Text.primary)
+                        Image(systemName: "pencil")
+                            .font(.caption)
+                            .foregroundColor(Theme.Text.secondary)
+                    }
+                }
+                .accessibilityLabel(username.isEmpty ? "Set your name" : "Edit username")
+
+                // P11: dynamic subtitle reflecting actual usage
+                Text(profileSubtitle)
+                    .font(.caption)
+                    .foregroundColor(Theme.Text.tertiary)
+            }
+        }
+        .padding(.top, 20)
+    }
+
+    private var profileSubtitle: String {
+        if statsManager.reverseDays == 0 {
+            return "Reversing starts today"
+        } else if statsManager.reverseDays == 1 {
+            return "Day 1 of reversing"
+        } else {
+            return "\(statsManager.reverseDays) days reversing"
+        }
+    }
+
+    private var statsRow: some View {
+        HStack(spacing: 16) {
+            ProfileStatCard(value: "\(statsManager.reverseDays)", label: "Reverse Days", icon: "calendar.badge.clock", color: .orange)
+            ProfileStatCard(value: "\(ruleManager.ruleHistory.count)", label: "Rules Done", icon: "scroll.fill", color: .yellow)
+            ProfileStatCard(value: "\(statsManager.mirrorTimeMinutes)", label: "Mirror Min", icon: "camera.viewfinder", color: .purple)
+        }
+        .padding(.horizontal)
+    }
+
+    private var achievementsSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("ACHIEVEMENTS")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(Theme.Accent.warning)
+                .padding(.horizontal)
+
+            if achievements.isEmpty {
+                Text("Complete rules to unlock achievements")
+                    .font(.caption)
+                    .foregroundColor(Theme.Text.tertiary)
+                    .frame(maxWidth: .infinity, alignment: .center)
+                    .padding()
+            } else {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 110))], spacing: 12) {
+                    ForEach(achievements) { achievement in
+                        AchievementBadge(name: achievement.name, icon: achievement.icon, level: achievement.isUnlocked ? 3 : 0)
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+    }
+
+    private var premiumSection: some View {
+        PremiumSection(
+            onRestore: {
+                Task {
+                    await premiumManager.restorePurchases()
+                    restoreMessage = premiumManager.isPremium
+                        ? "✅ Premium restored successfully"
+                        : "No previous purchases found for this Apple ID"
+                    showRestoreAlert = true
+                }
+            }
+        )
+    }
+
+    private var settingsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("SETTINGS")
+                .font(.caption)
+                .fontWeight(.bold)
+                .foregroundColor(.cyan)
+                .padding(.horizontal)
+
+            VStack(spacing: 0) {
+                SettingsRow(icon: "moon.fill", title: "Dark Mode", color: .purple) {
+                    Toggle("", isOn: $isDarkMode)
+                        .labelsHidden()
+                        .accessibilityLabel("Dark mode toggle")
+                }
+
+                Divider().background(Color.white.opacity(0.1))
+
+                SettingsRow(icon: "bell.fill", title: "Daily Reminder", color: .yellow) {
+                    Toggle("", isOn: $isNotificationsEnabled)
+                        .labelsHidden()
+                        .accessibilityLabel("Daily reminder toggle")
+                        .onChange(of: isNotificationsEnabled) { _, newValue in
+                            if newValue {
+                                ReverseNotificationService.shared.requestAuthorization { granted in
+                                    if granted {
+                                        ReverseNotificationService.shared.scheduleDailyRuleReminder()
+                                    } else {
+                                        // Reset toggle if user denied
+                                        DispatchQueue.main.async {
+                                            isNotificationsEnabled = false
+                                        }
+                                    }
+                                }
+                            } else {
+                                ReverseNotificationService.shared.cancelNotification(identifier: "daily_rule")
+                            }
+                        }
+                }
+
+                Divider().background(Color.white.opacity(0.1))
+
+                NavigationLink {
+                    PrivacyPolicyView()
+                } label: {
+                    SettingsRow(icon: "hand.raised.fill", title: "Privacy Policy", color: .blue, showChevron: true) {}
+                }
+                .accessibilityLabel("Privacy policy")
+
+                Divider().background(Color.white.opacity(0.1))
+
+                Button {
+                    if let url = URL(string: "mailto:support@techidaily.com") {
+                        openURL(url)  // P12: use Environment openURL instead of force-unwrap Link
+                    }
+                } label: {
+                    SettingsRow(icon: "envelope.fill", title: "Contact Us", color: .green, showChevron: true) {}
+                }
+                .accessibilityLabel("Contact us via email")
+
+                Divider().background(Color.white.opacity(0.1))
+
+                NavigationLink {
+                    AboutView()
+                } label: {
+                    SettingsRow(icon: "info.circle.fill", title: "About", color: .orange, showChevron: true) {}
+                }
+                .accessibilityLabel("About ReverseWorldGo")
+            }
+            .background(Theme.Background.card)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
+            .padding(.horizontal)
+        }
+    }
+
+    // MARK: - Helpers
+
+    private var isUsernameValid: Bool {
+        let trimmed = username.trimmingCharacters(in: .whitespaces)
+        return trimmed.count >= 3 && trimmed.count <= 20
+    }
+
+    private func validateAndSaveName() {
+        let trimmed = username.trimmingCharacters(in: .whitespaces)
+        if trimmed.count >= 3 && trimmed.count <= 20 {
+            username = trimmed
+        } else {
+            username = ""
         }
     }
 }
@@ -193,18 +272,20 @@ struct ProfileStatCard: View {
             Image(systemName: icon)
                 .font(.title2)
                 .foregroundColor(color)
+                .accessibilityHidden(true)
             Text(value)
                 .font(.title2)
                 .fontWeight(.bold)
-                .foregroundColor(.white)
+                .foregroundColor(Theme.Text.primary)
+                .accessibilityLabel("\(label): \(value)")
             Text(label)
                 .font(.caption2)
-                .foregroundColor(.white.opacity(0.6))
+                .foregroundColor(Theme.Text.secondary)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 16)
-        .background(Color(hex: "1a0a2e"))
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .background(Theme.Background.card)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
     }
 }
 
@@ -218,33 +299,26 @@ struct AchievementBadge: View {
             ZStack {
                 Circle()
                     .fill(
-                        LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        LinearGradient(colors: level > 0 ? [.yellow, .orange] : [.gray.opacity(0.3), .gray.opacity(0.5)], startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
                     .frame(width: 50, height: 50)
 
                 Image(systemName: icon)
                     .font(.title3)
-                    .foregroundColor(.black)
+                    .foregroundColor(level > 0 ? .black : .white.opacity(0.5))
             }
+            .accessibilityLabel(level > 0 ? "Unlocked: \(name)" : "Locked: \(name)")
 
             Text(name)
                 .font(.caption2)
-                .foregroundColor(.white)
+                .foregroundColor(level > 0 ? Theme.Text.primary : Theme.Text.tertiary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
-
-            HStack(spacing: 2) {
-                ForEach(0..<level, id: \.self) { _ in
-                    Image(systemName: "star.fill")
-                        .font(.system(size: 6))
-                        .foregroundColor(.yellow)
-                }
-            }
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
-        .background(Color(hex: "1a0a2e"))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .background(Theme.Background.card)
+        .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
     }
 }
 
@@ -261,19 +335,16 @@ struct SettingsRow<Content: View>: View {
                 .font(.body)
                 .foregroundColor(color)
                 .frame(width: 30)
-
+                .accessibilityHidden(true)
             Text(title)
                 .font(.body)
-                .foregroundColor(.white)
-
+                .foregroundColor(Theme.Text.primary)
             Spacer()
-
             trailing()
-
             if showChevron {
                 Image(systemName: "chevron.right")
                     .font(.caption)
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(Theme.Text.disabled)
             }
         }
         .padding()
@@ -281,42 +352,23 @@ struct SettingsRow<Content: View>: View {
 }
 
 struct PrivacyPolicyView: View {
+    // P2: WebView loads the live policy so app and website stay in sync
     var body: some View {
         ZStack {
-            Color(hex: "0a0a1a")
+            Theme.Background.primary
                 .ignoresSafeArea()
 
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Privacy Policy")
-                        .font(.title)
-                        .fontWeight(.bold)
-                        .foregroundColor(.white)
-
-                    Text("Last updated: May 1, 2026")
-                        .foregroundColor(.secondary)
-
-                    Text("""
-                    ReverseWorldGo is committed to protecting your privacy. This app does not collect any personal data.
-
-                    **Data Storage**
-                    - All data is stored locally on your device
-                    - We do not use any cloud services
-                    - No account or login required
-
-                    **Permissions**
-                    - Camera: Used only for mirror mode feature
-                    - Photo Library: Used to save your creations
-
-                    **Third Parties**
-                    - We do not share any data with third parties
-
-                    **Contact**
-                    support@techidaily.com
-                    """)
-                    .foregroundColor(.white.opacity(0.9))
+            if let url = URL(string: "https://lauer3912.github.io/ios-ReverseWorld/PrivacyPolicy.html") {
+                PrivacyPolicyWebView(url: url)
+                    .ignoresSafeArea(edges: .bottom)
+            } else {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 50))
+                        .foregroundColor(.orange)
+                    Text("Privacy Policy URL is invalid.")
+                        .foregroundColor(Theme.Text.primary)
                 }
-                .padding()
             }
         }
         .navigationTitle("Privacy Policy")
@@ -324,10 +376,28 @@ struct PrivacyPolicyView: View {
     }
 }
 
+import WebKit
+struct PrivacyPolicyWebView: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context: Context) -> WKWebView {
+        let view = WKWebView()
+        view.load(URLRequest(url: url))
+        return view
+    }
+
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        if uiView.url != url {
+            uiView.load(URLRequest(url: url))
+        }
+    }
+}
+
 struct AboutView: View {
+    // P1: derive version from Bundle.main
     var body: some View {
         ZStack {
-            Color(hex: "0a0a1a")
+            Theme.Background.primary
                 .ignoresSafeArea()
 
             VStack(spacing: 20) {
@@ -336,18 +406,19 @@ struct AboutView: View {
                     .foregroundStyle(
                         LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing)
                     )
+                    .accessibilityHidden(true)
 
                 Text("ReverseWorldGo")
                     .font(.title)
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(Theme.Text.primary)
 
-                Text("Version 1.0.0")
-                    .foregroundColor(.white.opacity(0.5))
+                Text("Version \(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
+                    .foregroundColor(Theme.Text.tertiary)
 
                 Text("Flip reality. Reverse rules. Experience the world differently.")
                     .font(.body)
-                    .foregroundColor(.white.opacity(0.7))
+                    .foregroundColor(Theme.Text.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
@@ -363,9 +434,9 @@ struct AboutView: View {
 // MARK: - Premium Section
 
 struct PremiumSection: View {
-    @StateObject private var premiumManager = PremiumManager.shared
+    @EnvironmentObject var premiumManager: PremiumManager  // P3: use shared via Environment
     @State private var showPaywall = false
-    @State private var purchaseError: String?
+    let onRestore: () -> Void  // P7: restore action from parent
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -373,12 +444,12 @@ struct PremiumSection: View {
                 Text("PREMIUM")
                     .font(.caption)
                     .fontWeight(.bold)
-                    .foregroundColor(.yellow)
+                    .foregroundColor(Theme.Accent.warning)
                 if premiumManager.isPremium {
                     Text("· ACTIVE")
                         .font(.caption)
                         .fontWeight(.bold)
-                        .foregroundColor(.green)
+                        .foregroundColor(Theme.Accent.success)
                 }
                 Spacer()
             }
@@ -396,34 +467,51 @@ struct PremiumSection: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(premiumManager.isPremium ? "Premium Active" : "Unlock Premium")
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(Theme.Text.primary)
                         Text(premiumManager.isPremium ? "All filters, ad-free, unlimited entries" : "Get 7-day free trial")
                             .font(.caption)
-                            .foregroundColor(.white.opacity(0.6))
+                            .foregroundColor(Theme.Text.secondary)
                     }
                     Spacer()
                     if !premiumManager.isPremium {
                         Image(systemName: "chevron.right")
-                            .foregroundColor(.white.opacity(0.4))
+                            .foregroundColor(Theme.Text.disabled)
                     }
                 }
                 .padding()
                 .background(
                     LinearGradient(colors: premiumManager.isPremium ?
-                        [Color(hex: "1a0a2e"), Color(hex: "0a0a1a")] :
-                        [Color(hex: "3d2a6e"), Color(hex: "1a0a2e")], startPoint: .topLeading, endPoint: .bottomTrailing)
+                        [Theme.Background.card, Theme.Background.primary] :
+                        [Theme.Background.elevated, Theme.Background.card], startPoint: .topLeading, endPoint: .bottomTrailing)
                 )
-                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: Theme.Card.cornerRadius)
                         .stroke(LinearGradient(colors: [.yellow.opacity(0.5), .orange.opacity(0.5)], startPoint: .leading, endPoint: .trailing), lineWidth: 1)
                 )
             }
             .padding(.horizontal)
+            .accessibilityLabel(premiumManager.isPremium ? "Premium active" : "Unlock premium")
+
+            // P7: Restore Purchases always visible (Apple 3.1.1 requirement)
+            if !premiumManager.isPremium {
+                Button {
+                    onRestore()
+                } label: {
+                    HStack {
+                        Image(systemName: "arrow.clockwise.circle")
+                        Text("Restore Purchases")
+                    }
+                    .font(.caption)
+                    .foregroundColor(Theme.Text.secondary)
+                }
+                .padding(.horizontal)
+                .accessibilityLabel("Restore previous purchases")
+            }
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView(isPresented: $showPaywall)
-                .environmentObject(premiumManager)
+                .environmentObject(premiumManager)  // P13: pass once
         }
     }
 }
@@ -437,27 +525,26 @@ struct PaywallView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color(hex: "0a0a1a").ignoresSafeArea()
+                Theme.Background.primary.ignoresSafeArea()
 
-                VStack(spacing: 24) {
-                    // Header
+                VStack(spacing: Theme.Layout.sectionSpacing) {
                     VStack(spacing: 8) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 60))
                             .foregroundStyle(LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .accessibilityHidden(true)
                         Text("Unlock Premium")
                             .font(.title)
                             .fontWeight(.bold)
-                            .foregroundColor(.white)
+                            .foregroundColor(Theme.Text.primary)
                         Text("Get 7-day free trial, then \(premiumManager.displayPrice)/month")
                             .font(.subheadline)
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(Theme.Text.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                     }
                     .padding(.top, 40)
 
-                    // Features
                     VStack(alignment: .leading, spacing: 12) {
                         PremiumFeatureRow(icon: "camera.viewfinder", title: "All mirror filters unlocked")
                         PremiumFeatureRow(icon: "text.bubble.fill", title: "All reverse translator modes")
@@ -470,7 +557,6 @@ struct PaywallView: View {
 
                     Spacer()
 
-                    // Purchase buttons
                     VStack(spacing: 12) {
                         if let yearly = premiumManager.yearlyProduct {
                             PurchaseButton(
@@ -513,14 +599,15 @@ struct PaywallView: View {
                     } label: {
                         Text("Restore Purchases")
                             .font(.caption)
-                            .foregroundColor(.white.opacity(0.6))
+                            .foregroundColor(Theme.Text.secondary)
                     }
                     .padding(.bottom)
+                    .accessibilityLabel("Restore previous purchases")
 
                     if let error = purchaseError {
                         Text(error)
                             .font(.caption)
-                            .foregroundColor(.red)
+                            .foregroundColor(Theme.Accent.danger)
                     }
                 }
             }
@@ -528,7 +615,7 @@ struct PaywallView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Close") { isPresented = false }
-                        .foregroundColor(.white)
+                        .foregroundColor(Theme.Text.primary)
                 }
             }
         }
@@ -546,6 +633,7 @@ struct PaywallView: View {
                     purchaseError = "Purchase cancelled"
                 }
             } catch {
+                AppLog.premium.error("Purchase failed: \(error.localizedDescription, privacy: .public)")
                 purchaseError = error.localizedDescription
             }
             purchasing = false
@@ -560,11 +648,12 @@ struct PremiumFeatureRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: icon)
-                .foregroundColor(.yellow)
+                .foregroundColor(Theme.Accent.warning)
                 .frame(width: 24)
+                .accessibilityHidden(true)
             Text(title)
                 .font(.subheadline)
-                .foregroundColor(.white)
+                .foregroundColor(Theme.Text.primary)
             Spacer()
         }
     }
@@ -587,7 +676,7 @@ struct PurchaseButton: View {
                     HStack {
                         Text(title)
                             .font(.headline)
-                            .foregroundColor(.white)
+                            .foregroundColor(isPopular ? .black : Theme.Text.primary)
                         if isPopular {
                             Text("POPULAR")
                                 .font(.caption2)
@@ -601,23 +690,23 @@ struct PurchaseButton: View {
                     }
                     Text(subtitle)
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.7))
+                        .foregroundColor(isPopular ? .black.opacity(0.8) : Theme.Text.secondary)
                 }
                 Spacer()
                 if purchasing {
-                    ProgressView().tint(.white)
+                    ProgressView().tint(isPopular ? .black : .white)
                 } else {
                     Image(systemName: "chevron.right")
-                        .foregroundColor(.white.opacity(0.6))
+                        .foregroundColor(isPopular ? .black : Theme.Text.secondary)
                 }
             }
             .padding()
             .background(
                 LinearGradient(colors: isPopular ?
                     [Color.yellow, Color.orange] :
-                    [Color(hex: "1a0a2e"), Color(hex: "0a0a1a")], startPoint: .leading, endPoint: .trailing)
+                    [Theme.Background.card, Theme.Background.primary], startPoint: .leading, endPoint: .trailing)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
         }
     }
 }
@@ -626,4 +715,5 @@ struct PurchaseButton: View {
     ProfileView()
         .environmentObject(StatsManager())
         .environmentObject(RuleManager())
+        .environmentObject(PremiumManager())
 }
