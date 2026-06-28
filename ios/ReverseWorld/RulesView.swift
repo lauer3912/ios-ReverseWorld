@@ -224,19 +224,35 @@ struct RuleMiniCard: View {
     let isDiscovered: Bool
 
     var body: some View {
-        VStack(spacing: 8) {
-            Image(systemName: isDiscovered ? "checkmark.circle.fill" : "questionmark.circle")
-                .font(.title2)
-                .foregroundColor(isDiscovered ? Theme.Accent.success : .gray)
-
-            Text(isDiscovered ? "Discovered" : "???")
+        VStack(spacing: 6) {
+            HStack(spacing: 4) {
+                Image(systemName: isDiscovered ? "checkmark.circle.fill" : "lock.fill")
+                    .font(.caption)
+                    .foregroundColor(isDiscovered ? Theme.Accent.success : Theme.Text.tertiary)
+                if !isDiscovered {
+                    Text("Locked")
+                        .font(.system(size: 8, weight: .bold))
+                        .padding(.horizontal, 4)
+                        .padding(.vertical, 1)
+                        .background(Theme.Text.tertiary.opacity(0.3))
+                        .foregroundColor(Theme.Text.secondary)
+                        .clipShape(Capsule())
+                }
+            }
+            Text(rule.title)
                 .font(.caption2)
-                .foregroundColor(isDiscovered ? Theme.Text.primary : .gray)
+                .fontWeight(.medium)
+                .foregroundColor(isDiscovered ? Theme.Text.primary : Theme.Text.secondary)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
+        .padding(.horizontal, 6)
         .background(Theme.Background.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .accessibilityLabel(isDiscovered ? "Discovered: \(rule.title)" : "Locked: \(rule.title). Complete to unlock.")
     }
 }
 
