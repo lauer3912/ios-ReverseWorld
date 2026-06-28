@@ -92,8 +92,8 @@ Mirror your world. Reverse your text. Discover parallel realities. Download Reve
 
 | 字段 | 值 |
 |------|-----|
-| 技术支持网址 | https://lauer3912.github.io/ios-ReverseWorld/docs/PrivacyPolicy.html |
-| 隐私政策网址 | https://lauer3912.github.io/ios-ReverseWorld/docs/PrivacyPolicy.html |
+| 技术支持网址 | https://lauer3912.github.io/ios-ReverseWorld/PrivacyPolicy.html |
+| 隐私政策网址 | https://lauer3912.github.io/ios-ReverseWorld/PrivacyPolicy.html |
 
 ---
 
