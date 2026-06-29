@@ -27,15 +27,15 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSCameraUsageDescription</key>
-	<string>ReverseWorldGo needs camera access for mirror mode and reverse video features.</string>
+	<string>ReverseWorldGo uses the camera so you can mirror your world, apply reverse visual effects to live scenes, and record videos that play backwards.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>ReverseWorldGo needs microphone access to record mirror videos with sound.</string>
+	<string>ReverseWorldGo uses the microphone to record sound with your mirror videos. Audio stays on your device — never uploaded.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>ReverseWorldGo needs to save your reverse creations to your photo library.</string>
+	<string>ReverseWorldGo saves your reverse creations (mirrored photos, reversed videos, voice-inverted clips) to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>ReverseWorldGo needs photo library access to apply reverse effects to your images.</string>
+	<string>ReverseWorldGo needs to read your photos so you can apply reverse visual filters (mirror, invert, hue shift, etc.) to your existing pictures.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>ReverseWorldGo uses speech recognition to convert your voice into reversed text.</string>
+	<string>ReverseWorldGo uses on-device speech recognition to convert your voice into reversed text in the Voice Inversion feature. Your audio never leaves your device.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

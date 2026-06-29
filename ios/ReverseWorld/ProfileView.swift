@@ -5,6 +5,7 @@ struct ProfileView: View {
     @EnvironmentObject var statsManager: StatsManager
     @EnvironmentObject var ruleManager: RuleManager
     @EnvironmentObject var premiumManager: PremiumManager
+    @EnvironmentObject var permissionsManager: PermissionsManager
     @Environment(\.openURL) private var openURL
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("isNotificationsEnabled") private var isNotificationsEnabled = false
@@ -224,6 +225,20 @@ struct ProfileView: View {
                             }
                         }
                 }
+
+                Divider().background(Color.white.opacity(0.1))
+
+                NavigationLink {
+                    PermissionsView(manager: permissionsManager)
+                } label: {
+                    SettingsRow(icon: "lock.shield.fill", title: L10n.profilePermissions, color: .red, showChevron: true) {
+                        // Inline permission status badge (red if any denied, green if all good, gray if pending)
+                        Image(systemName: permissionsManager.allCriticalGranted ? "checkmark.circle.fill" : "exclamationmark.circle.fill")
+                            .foregroundColor(permissionsManager.allCriticalGranted ? .green : .orange)
+                            .font(.caption)
+                    }
+                }
+                .accessibilityLabel("Permissions (\(permissionsManager.grantedCount) of \(permissionsManager.totalCount) granted)")
 
                 Divider().background(Color.white.opacity(0.1))
 
