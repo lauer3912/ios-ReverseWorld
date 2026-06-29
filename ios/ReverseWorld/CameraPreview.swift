@@ -54,6 +54,11 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
         switch status {
         case .authorized:
             isAuthorized = true
+            // 🔧 Fix 09:35 CST bug: 关闭 App 重启后, MirrorView 显示黑屏/没预览
+            // 原因: init 只设 isAuthorized=true 但没调 configureSession()
+            //      → AVCaptureSession 没启动 → 预览层没东西显示
+            // Fix: authorized 时主动 configureSession, 让重启 App 后 camera 立即可用
+            configureSession()
         case .denied, .restricted:
             isPermanentlyDenied = true
             error = "Camera access denied. Please enable in Settings."

@@ -132,15 +132,15 @@ final class PremiumManager: ObservableObject {
     var yearlyProduct: Product? { product(for: Self.yearlyProductID) }
 
     var displayPrice: String {
-        guard !products.isEmpty else { return "$0.99" }
+        guard !products.isEmpty else { return "$4.99" }
         if let monthly = monthlyProduct, monthly.id == Self.monthlyProductID {
             return monthly.displayPrice
         }
-        return "$0.99"
+        return "$4.99"
     }
 
     var yearlyDisplayPrice: String {
-        guard let yearly = yearlyProduct else { return "$29.99" }
+        guard let yearly = yearlyProduct else { return "$49.99" }
         return yearly.displayPrice
     }
 }

@@ -105,8 +105,8 @@ Mirror your world. Reverse your text. Discover parallel realities. Download Reve
 
 | 产品 ID | 价格等级 | 显示名称(EN) | 描述(EN) | 时长 | 审核截图 |
 |--------|---------|-------------|---------|------|---------|
-| ReverseWorld.premium_monthly | Tier 2 ($0.99) | Premium Monthly | Unlock all premium features: all filters, ad-free, unlimited entries | 1 Month | ✅ IAP_ReverseWorld_PremiumMonthly_iPhone69.png |
-| ReverseWorld.premium_yearly | Tier 15 ($29.99) | Premium Yearly | Best value: unlock all premium features for a full year | 1 Year | 待上传 |
+| ReverseWorld.premium_monthly | Tier 2 ($4.99) | Premium Monthly | Unlock all premium features: all filters, ad-free, unlimited entries | 1 Month | ✅ IAP_ReverseWorld_PremiumMonthly_iPhone69.png |
+| ReverseWorld.premium_yearly | Tier 15 ($49.99) | Premium Yearly | Best value: unlock all premium features for a full year | 1 Year | ✅ uploaded |
 
 **Introductory Offers（试用）**:
 
