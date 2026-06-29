@@ -584,14 +584,18 @@ struct PaywallView: View {
                                 onPurchase: { purchase(product: yearly) }
                             )
                         } else {
+                            // Yearly not loaded (pricing not configured in ASC yet)
+                            // Per #44 SOP: disable button + show "Coming Soon" instead of fake-tappable
                             PurchaseButton(
                                 title: L10n.paywallYearly,
-                                subtitle: L10n.paywallYearlyFallback,
+                                subtitle: "Coming Soon • Save 17% with annual plan",
                                 product: nil,
                                 isPopular: true,
                                 purchasing: $purchasing,
                                 onPurchase: nil
                             )
+                            .disabled(true)
+                            .opacity(0.6)
                         }
 
                         if let monthly = premiumManager.monthlyProduct {
