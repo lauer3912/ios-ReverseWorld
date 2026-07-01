@@ -473,6 +473,19 @@ struct PremiumSection: View {
         CommandLine.arguments.contains("-autoPaywall")
     }()
     let onRestore: () -> Void  // P7: restore action from parent
+    // Diagnostic: choose which plan to highlight (Default = "yearly")
+    // Usage: launch with `-highlightPlan monthly` to highlight Monthly, `-highlightPlan yearly` (default) for Yearly.
+    // 07-01 21:30 CST added per佛老爷 "需要两张图 (年+月)"
+    @State private var highlightPlan: String = PremiumSection.parseHighlightPlan()
+    static func parseHighlightPlan() -> String {
+        let args = CommandLine.arguments
+        if let i = args.firstIndex(of: "-highlightPlan"),
+           i + 1 < args.count {
+            return args[i + 1].lowercased()
+        }
+        return "yearly"
+    }
+
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -599,7 +612,7 @@ struct PaywallView: View {
                                 title: L10n.paywallYearly,
                                 subtitle: "Best value • \(premiumManager.yearlyDisplayPrice)/year",
                                 product: yearly,
-                                isPopular: true,
+                                isPopular: PremiumSection.parseHighlightPlan() != "monthly",
                                 purchasing: $purchasing,
                                 onPurchase: { purchase(product: yearly) }
                             )
@@ -610,7 +623,7 @@ struct PaywallView: View {
                                 title: L10n.paywallYearly,
                                 subtitle: "Coming Soon • Save 17% with annual plan",
                                 product: nil,
-                                isPopular: true,
+                                isPopular: PremiumSection.parseHighlightPlan() != "monthly",
                                 purchasing: $purchasing,
                                 onPurchase: nil
                             )
@@ -623,7 +636,7 @@ struct PaywallView: View {
                                 title: L10n.paywallMonthly,
                                 subtitle: premiumManager.displayPrice + "/month",
                                 product: monthly,
-                                isPopular: false,
+                                isPopular: PremiumSection.parseHighlightPlan() == "monthly",
                                 purchasing: $purchasing,
                                 onPurchase: { purchase(product: monthly) }
                             )
