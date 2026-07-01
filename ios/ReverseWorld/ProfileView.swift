@@ -466,7 +466,12 @@ struct AboutView: View {
 
 struct PremiumSection: View {
     @EnvironmentObject var premiumManager: PremiumManager  // P3: use shared via Environment
-    @State private var showPaywall = false
+    @State private var showPaywall: Bool = {
+        // Diagnostic auto-open for ASC IAP screenshot capture (07-01 21:10 CST)
+        // Usage: launch with `-autoPaywall` arg to make paywall sheet appear immediately.
+        // Idle state otherwise (default false) — no impact on production behavior.
+        CommandLine.arguments.contains("-autoPaywall")
+    }()
     let onRestore: () -> Void  // P7: restore action from parent
 
     var body: some View {
