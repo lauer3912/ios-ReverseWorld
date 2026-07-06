@@ -105,14 +105,14 @@ Mirror your world. Reverse your text. Discover parallel realities. Download Reve
 
 | 产品 ID | 价格等级 | 显示名称(EN) | 描述(EN) | 时长 | 审核截图 |
 |--------|---------|-------------|---------|------|---------|
-| ReverseWorld.premium_monthly | Tier 2 ($4.99) | Premium Monthly | Unlock all premium features: all filters, ad-free, unlimited entries | 1 Month | ✅ IAP_ReverseWorld_PremiumMonthly_iPhone69.png |
-| ReverseWorld.premium_yearly | Tier 15 ($49.99) | Premium Yearly | Best value: unlock all premium features for a full year | 1 Year | ✅ IAP_ReverseWorld_PremiumYearly_iPhone69.png (see L158) | Apple ASC architecture limits 1 attachment per version, so佛老爷 Web UI both subs link to attachment 27cd0877 (the paywall screenshot which covers both) — Yearly iPhone69 disk file kept as documentation as佛老爷 requested. |\n
+| com.ggsheng.ReverseWorld.PremiumMonthly | Tier 2 ($4.99) | Premium Monthly | Unlock all premium features: all filters, ad-free, unlimited entries | 1 Month | ✅ IAP_ReverseWorld_PremiumMonthly_iPhone69.png |
+| com.ggsheng.ReverseWorld.PremiumYearly | Tier 15 ($49.99) | Premium Yearly | Best value: unlock all premium features for a full year | 1 Year | ✅ IAP_ReverseWorld_PremiumYearly_iPhone69.png (see L158) | Apple ASC architecture limits 1 attachment per version, so佛老爷 Web UI both subs link to attachment 27cd0877 (the paywall screenshot which covers both) — Yearly iPhone69 disk file kept as documentation as佛老爷 requested. |\n
 
 **Introductory Offers（试用）**:
 
 | 产品 ID | 优惠类型 | 时长 | 说明 |
 |--------|---------|------|------|
-| ReverseWorld.premium_yearly | Free Trial | 7 Days | 7-day free trial for Premium Yearly |
+| com.ggsheng.ReverseWorld.PremiumYearly | Free Trial | 7 Days | 7-day free trial for Premium Yearly |
 
 ---
 
@@ -155,7 +155,7 @@ Mirror your world. Reverse your text. Discover parallel realities. Download Reve
 
 | 产品 | 文件名 |
 |------|--------|
-| ReverseWorld.premium_monthly | AppStore/Screenshots/InAppPurchase/IAP_ReverseWorld_PremiumMonthly_iPhone69.png |\n| ReverseWorld.premium_yearly | AppStore/Screenshots/InAppPurchase/IAP_ReverseWorld_PremiumYearly_iPhone69.png (local documentation file; Apple review will use 27cd0877 paywall screenshot shared with Monthly) |
+| com.ggsheng.ReverseWorld.PremiumMonthly | AppStore/Screenshots/InAppPurchase/IAP_ReverseWorld_PremiumMonthly_iPhone69.png |\n| com.ggsheng.ReverseWorld.PremiumYearly | AppStore/Screenshots/InAppPurchase/IAP_ReverseWorld_PremiumYearly_iPhone69.png (local documentation file; Apple review will use 27cd0877 paywall screenshot shared with Monthly) |
 
 ---
 

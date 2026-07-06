@@ -586,12 +586,16 @@ struct PaywallView: View {
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(Theme.Text.primary)
-                        Text("Get 7-day free trial, then \(premiumManager.displayPrice)/month")
+                        Text(String(format: L10n.paywallSubtitleFormat, premiumManager.displayPrice))
                             .font(.subheadline)
                             .foregroundColor(Theme.Text.secondary)
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
-                    }
+                        Text("Auto-renews until cancelled. Cancel anytime in Settings → Apple ID → Subscriptions.")
+                            .font(.caption2)
+                            .foregroundColor(Theme.Text.tertiary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)                    }
                     .padding(.top, 40)
 
                     VStack(alignment: .leading, spacing: 12) {
