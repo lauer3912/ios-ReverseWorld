@@ -251,6 +251,15 @@ struct ProfileView: View {
 
                 Divider().background(Color.white.opacity(0.1))
 
+                NavigationLink {
+                    TermsOfServiceView()
+                } label: {
+                    SettingsRow(icon: "doc.text.fill", title: L10n.profileTermsOfService, color: .indigo, showChevron: true) {}
+                }
+                .accessibilityLabel("Terms of service")
+
+                Divider().background(Color.white.opacity(0.1))
+
                 Button {
                     if let url = URL(string: "mailto:support@techidaily.com") {
                         openURL(url)  // P12: use Environment openURL instead of force-unwrap Link
@@ -403,6 +412,32 @@ struct PrivacyPolicyView: View {
             }
         }
         .navigationTitle(L10n.profilePrivacyPolicy)
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+struct TermsOfServiceView: View {
+    // Per #63 Privacy/Terms 三件套: Terms = legal@techidaily.com
+    // WebView loads the live terms so app and website stay in sync
+    var body: some View {
+        ZStack {
+            Theme.Background.primary
+                .ignoresSafeArea()
+
+            if let url = URL(string: "https://lauer3912.github.io/ios-ReverseWorld/TermsOfService.html") {
+                PrivacyPolicyWebView(url: url)
+                    .ignoresSafeArea(edges: .bottom)
+            } else {
+                VStack(spacing: 16) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.system(size: 50))
+                        .foregroundColor(.orange)
+                    Text("Terms of Service URL is invalid.")
+                        .foregroundColor(Theme.Text.primary)
+                }
+            }
+        }
+        .navigationTitle(L10n.profileTermsOfService)
         .navigationBarTitleDisplayMode(.inline)
     }
 }

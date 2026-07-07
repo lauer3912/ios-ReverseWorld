@@ -74,6 +74,7 @@ enum L10n {
     static let profileDarkMode = "Dark Mode"
     static let profileDailyReminder = "Daily Reminder"
     static let profilePrivacyPolicy = "Privacy Policy"
+    static let profileTermsOfService = "Terms of Service"
     static let profileContactUs = "Contact Us"
     static let profilePermissions = "Permissions"
     static let profileAbout = "About"
