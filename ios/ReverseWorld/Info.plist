@@ -29,7 +29,7 @@
 	<key>NSCameraUsageDescription</key>
 	<string>ReverseWorldGo uses the camera so you can mirror your world, apply reverse visual effects to live scenes, and record videos that play backwards.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>ReverseWorldGo uses the microphone to record sound with your mirror videos. Audio stays on your device — never uploaded.</string>
+	<string>Record voice memos to attach to your reverse-video projects. For example, after filming a flipped clip you can add a short voice note like "Filmed in Tokyo, June 2026" — your audio is saved to the project file on this device and never uploaded.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>ReverseWorldGo saves your reverse creations (mirrored photos, reversed videos, voice-inverted clips) to your photo library.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

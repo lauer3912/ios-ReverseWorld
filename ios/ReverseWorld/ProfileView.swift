@@ -602,6 +602,7 @@ struct PremiumSection: View {
 
 struct PaywallView: View {
     @EnvironmentObject var premiumManager: PremiumManager
+    @Environment(\.openURL) private var openURL
     @Binding var isPresented: Bool
     @State private var purchasing = false
     @State private var purchaseError: String?
@@ -683,18 +684,44 @@ struct PaywallView: View {
                     }
                     .padding(.horizontal)
 
-                    Button {
-                        Task {
-                            await premiumManager.restorePurchases()
-                            isPresented = premiumManager.isPremium
+                    // Per Apple 3.1.2(a) + 5.1.1(ii): paywall MUST include Restore + Terms + Privacy links inline
+                    HStack(spacing: 16) {
+                        Button {
+                            Task {
+                                await premiumManager.restorePurchases()
+                                isPresented = premiumManager.isPremium
+                            }
+                        } label: {
+                            Text(L10n.profileRestorePurchases)
+                                .font(.caption)
+                                .foregroundColor(Theme.Text.secondary)
                         }
-                    } label: {
-                        Text(L10n.profileRestorePurchases)
-                            .font(.caption)
-                            .foregroundColor(Theme.Text.secondary)
+                        .accessibilityLabel("Restore previous purchases")
+
+                        Button {
+                            if let url = URL(string: "https://lauer3912.github.io/ios-ReverseWorld/TermsOfService.html") {
+                                openURL(url)
+                            }
+                        } label: {
+                            Text(L10n.profileTermsOfService)
+                                .font(.caption)
+                                .foregroundColor(Theme.Text.secondary)
+                        }
+                        .accessibilityLabel("Terms of Service")
+
+                        Button {
+                            if let url = URL(string: "https://lauer3912.github.io/ios-ReverseWorld/PrivacyPolicy.html") {
+                                openURL(url)
+                            }
+                        } label: {
+                            Text(L10n.profilePrivacyPolicy)
+                                .font(.caption)
+                                .foregroundColor(Theme.Text.secondary)
+                        }
+                        .accessibilityLabel("Privacy Policy")
                     }
                     .padding(.bottom)
-                    .accessibilityLabel("Restore previous purchases")
+                    .padding(.horizontal)
 
                     if let error = purchaseError {
                         Text(error)
