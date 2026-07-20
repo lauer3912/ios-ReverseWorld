@@ -3,252 +3,435 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ReverseWorldGo support — Mirror your world, in reverse. AI-powered reverse translation and journaling app.">
+    <meta name="description" content="ReverseWorldGo — Official Support. Mirror your world, in reverse.">
     <title>ReverseWorldGo — Support</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #ffffff;
+            --bg-alt: #f5f5f7;
+            --text: #1d1d1f;
+            --text-secondary: #6e6e73;
+            --accent: #0071e3;
+            --accent-hover: #0077ed;
+            --divider: #d2d2d7;
+        }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
-            line-height: 1.7;
-            color: #1a1a1a;
-            background: linear-gradient(180deg, #fafafa 0%, #f0f0f3 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.5;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
         }
-        .container {
-            max-width: 720px;
-            margin: 0 auto;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 48px 40px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.06);
+
+        /* ===== Apple-style sticky nav bar ===== */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom: 1px solid var(--divider);
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 22px;
+            font-size: 14px;
         }
-        h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            color: #000;
-            letter-spacing: -0.5px;
-        }
-        .tagline {
-            color: #6e6e73;
-            font-size: 16px;
-            margin-bottom: 32px;
-        }
-        h2 {
-            font-size: 20px;
+        .nav-logo {
             font-weight: 600;
-            margin-top: 36px;
+            font-size: 17px;
+            letter-spacing: -0.3px;
+            color: var(--text);
+            text-decoration: none;
+        }
+        .nav-links { display: flex; gap: 28px; }
+        .nav-links a {
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 400;
+            opacity: 0.88;
+            transition: opacity 0.2s;
+        }
+        .nav-links a:hover { opacity: 1; }
+
+        /* ===== Hero (Apple-style large) ===== */
+        .hero {
+            text-align: center;
+            padding: 120px 24px 96px;
+            background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
+        }
+        .hero-label {
+            font-size: 21px;
+            color: var(--text-secondary);
             margin-bottom: 12px;
-            color: #1d1d1f;
+            font-weight: 400;
             letter-spacing: -0.2px;
         }
-        p { margin-bottom: 16px; color: #2c2c2e; }
-        a {
-            color: #007aff;
+        .hero-title {
+            font-size: 80px;
+            line-height: 1.05;
+            font-weight: 700;
+            letter-spacing: -2px;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        .hero-subtitle {
+            font-size: 28px;
+            line-height: 1.2;
+            color: var(--text);
+            font-weight: 400;
+            max-width: 720px;
+            margin: 0 auto 36px;
+            letter-spacing: -0.4px;
+        }
+        .hero-cta {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            padding: 14px 32px;
+            border-radius: 980px;
             text-decoration: none;
+            font-size: 17px;
+            font-weight: 400;
+            transition: background 0.2s;
+        }
+        .hero-cta:hover { background: var(--accent-hover); }
+        .hero-meta {
+            margin-top: 56px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        /* ===== Section generic ===== */
+        section {
+            padding: 96px 24px;
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .section-alt { background: var(--bg-alt); max-width: none; }
+        .section-alt > * { max-width: 1080px; margin-left: auto; margin-right: auto; }
+
+        .section-eyebrow {
+            font-size: 17px;
+            color: var(--accent);
+            text-transform: none;
+            margin-bottom: 12px;
+            font-weight: 400;
+            letter-spacing: -0.2px;
+        }
+        .section-title {
+            font-size: 48px;
+            line-height: 1.1;
+            font-weight: 700;
+            letter-spacing: -1px;
+            margin-bottom: 16px;
+            color: var(--text);
+        }
+        .section-subtitle {
+            font-size: 21px;
+            color: var(--text-secondary);
+            max-width: 720px;
+            font-weight: 400;
+            letter-spacing: -0.2px;
+        }
+
+        /* ===== Feature grid (Apple 3-column) ===== */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin-top: 48px;
+        }
+        .feature-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 40px 32px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--bg-alt);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+        .feature-title {
+            font-size: 21px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+        .feature-desc {
+            color: var(--text-secondary);
+            font-size: 17px;
+            line-height: 1.4;
+        }
+        .feature-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 15px;
             font-weight: 500;
         }
-        a:hover { text-decoration: underline; }
-        ul { list-style: none; padding-left: 0; }
-        li {
-            padding: 12px 0;
-            border-bottom: 1px solid #f2f2f7;
+
+        /* ===== Contact CTA section ===== */
+        .contact-cta {
+            background: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
+            padding: 96px 24px;
+            text-align: center;
         }
-        li:last-child { border-bottom: none; }
-        .label {
+        .contact-emails {
+            display: inline-flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 32px;
+        }
+        .email-pill {
+            background: #fff;
+            padding: 12px 24px;
+            border-radius: 980px;
+            text-decoration: none;
+            color: var(--text);
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.15s;
+        }
+        .email-pill:hover { transform: translateY(-1px); }
+        .email-pill span {
+            color: var(--text-secondary);
+            margin-right: 6px;
+            font-size: 13px;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-list { margin-top: 48px; max-width: 820px; margin-left: auto; margin-right: auto; }
+        .faq-item {
+            border-bottom: 1px solid var(--divider);
+            padding: 24px 0;
+        }
+        .faq-q {
+            font-weight: 600;
+            font-size: 21px;
+            color: var(--text);
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+        .faq-a {
+            color: var(--text-secondary);
+            font-size: 17px;
+            line-height: 1.5;
+        }
+
+        /* ===== App info card ===== */
+        .appinfo-card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 32px 40px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.04);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 24px;
+            margin-top: 32px;
+        }
+        .info-cell .label {
             display: block;
-            color: #6e6e73;
+            color: var(--text-secondary);
             font-size: 13px;
             margin-bottom: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        .value {
-            color: #1d1d1f;
-            font-size: 16px;
+        .info-cell .value {
+            color: var(--text);
+            font-size: 17px;
             font-weight: 500;
         }
-        .footer {
-            margin-top: 48px;
-            padding-top: 24px;
-            border-top: 1px solid #f2f2f7;
-            color: #86868b;
-            font-size: 13px;
+
+        /* ===== Footer (Apple-style minimal) ===== */
+        footer {
+            background: var(--bg-alt);
+            padding: 32px 24px 24px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            line-height: 1.4;
         }
-        .pill {
-            display: inline-block;
-            background: #f2f2f7;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 13px;
-            color: #6e6e73;
-            margin-left: 8px;
+        .footer-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+        }
+        .footer p { margin-bottom: 8px; }
+        .footer a {
+            color: var(--text-secondary);
+            text-decoration: underline;
         }
 
-        .faq-q {
-            font-weight: 600;
-            margin-top: 20px;
-            margin-bottom: 8px;
-            color: #1d1d1f;
-            font-size: 16px;
-        }
-        .faq-a {
-            margin-bottom: 16px;
-            padding-left: 16px;
-            border-left: 3px solid #007aff;
-            color: #2c2c2e;
+        @media (max-width: 768px) {
+            .hero-title { font-size: 48px; letter-spacing: -1px; }
+            .hero-subtitle { font-size: 21px; }
+            .section-title { font-size: 32px; letter-spacing: -0.5px; }
+            .nav-links { gap: 16px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>ReverseWorldGo <span class="pill">Support</span></h1>
-        <p class="tagline">Mirror your world, in reverse. AI-powered reverse translation and journaling.</p>
 
-        <h2>About ReverseWorldGo</h2>
-        <p>
-            ReverseWorldGo is an iOS app that helps you reflect on conversations, thoughts, and experiences
-            from a different angle. Features include AI-powered reverse translation, voice journaling,
-            and a private discovery feed for personal growth.
-        </p>
+<!-- ===== Sticky Nav ===== -->
+<nav class="nav">
+    <a href="#" class="nav-logo">ReverseWorldGo</a>
+    <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#faq">FAQ</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="#contact">Contact</a>
+    </div>
+</nav>
 
-        <h2>Need Help?</h2>
-        <p>
-            We're here to help with any questions about ReverseWorldGo — setup, features, subscriptions,
-            or technical issues. Reach out any time.
-        </p>
+<!-- ===== Hero ===== -->
+<header class="hero">
+    <p class="hero-label">Support</p>
+    <h1 class="hero-title">ReverseWorldGo.</h1>
+    <p class="hero-subtitle">Mirror your world. Reverse your text. Discover parallel realities.</p>
+    <a href="mailto:support@techidaily.com" class="hero-cta">Contact Support</a>
+    <p class="hero-meta">iOS 17.0+ · iPhone + iPad · Universal binary</p>
+</header>
 
-        <ul>
-            <li>
-                <span class="label">Email Support</span>
-                <span class="value">
-                    <a href="mailto:support@techidaily.com">support@techidaily.com</a>
-                </span>
-            </li>
-            <li>
-                <span class="label">Privacy Questions</span>
-                <span class="value">
-                    <a href="mailto:privacy@techidaily.com">privacy@techidaily.com</a>
-                </span>
-            </li>
-            <li>
-                <span class="label">Legal & Terms</span>
-                <span class="value">
-                    <a href="mailto:legal@techidaily.com">legal@techidaily.com</a>
-                </span>
-            </li>
-        </ul>
-
-        <h2>Manage Your Subscription</h2>
-        <p>
-            Premium subscriptions are managed through your Apple ID. To view, change, or cancel
-            your subscription:
-        </p>
-        <p>
-            <strong>iOS Settings → [your name] → Subscriptions → ReverseWorldGo Premium</strong>
-        </p>
-        <p>
-            You can also restore purchases inside the app via <em>Profile → Upgrade to Premium → Restore Purchases</em>.
-        </p>
-
-        <h2>Privacy Policy</h2>
-        <p>
-            Your privacy matters. Read our full privacy policy to understand what data we collect,
-            how we use it, and your rights under GDPR and CCPA.
-        </p>
-        <p>
-            <a href="https://lauer3912.github.io/ios-ReverseWorld-support/privacy.html" rel="noopener">
-                View Privacy Policy →
-            </a>
-        </p>
-
-        <h2>Terms of Service</h2>
-        <p>
-            By using ReverseWorldGo you agree to our terms of service, including subscription
-            auto-renewal terms and acceptable use guidelines.
-        </p>
-        <p>
-            <a href="https://lauer3912.github.io/ios-ReverseWorld-support/terms.html" rel="noopener">
-                View Terms of Service →
-            </a>
-        </p>
-
-        <h2>App Information</h2>
-        <ul>
-            <li>
-                <span class="label">Developer</span>
-                <span class="value">ZhiFeng Sun</span>
-            </li>
-            <li>
-                <span class="label">App Name</span>
-                <span class="value">ReverseWorldGo</span>
-            </li>
-            <li>
-                <span class="label">Bundle ID</span>
-                <span class="value">com.ggsheng.ReverseWorld</span>
-            </li>
-            <li>
-                <span class="label">Platform</span>
-                <span class="value">iOS (iPhone + iPad)</span>
-            </li>
-            <li>
-                <span class="label">App Store</span>
-                <span class="value">Coming soon — pending App Store review</span>
-            </li>
-        </ul>
-
-        <h2>Frequently Asked Questions</h2>
-
-        <p class="faq-q">1. How does ReverseWorldGo's reverse translation work?</p>
-        <p class="faq-a">
-            ReverseWorldGo analyzes your text using on-device AI to generate reversed, mirrored, and
-            upside-down versions in multiple writing styles. All processing happens on your device —
-            nothing is uploaded to remote servers.
-        </p>
-
-        <p class="faq-q">2. How do I restore my subscription?</p>
-        <p class="faq-a">
-            Open ReverseWorldGo and go to <em>Profile → Upgrade to Premium → Restore Purchases</em>.
-            You can also manage subscriptions at <strong>iOS Settings → [your name] → Subscriptions →
-            ReverseWorldGo Premium</strong>. Make sure you're signed in with the same Apple ID that
-            made the original purchase.
-        </p>
-
-        <p class="faq-q">3. Where is my data stored? Is it private?</p>
-        <p class="faq-a">
-            All journal entries, mirror photos, voice memos, and reverse translations are stored
-            locally on your device. We do not upload any personal data to our servers, and your
-            content is never used to train AI models. See our <a href="https://lauer3912.github.io/ios-ReverseWorld-support/privacy.html">Privacy Policy</a>
-            for full details.
-        </p>
-
-        <p class="faq-q">4. What iOS versions and devices are supported?</p>
-        <p class="faq-a">
-            ReverseWorldGo requires iOS 17.0 or later and runs natively on both iPhone and iPad.
-            Tested on iPhone 13 and newer, all iPad Pro models (M1+), and iPad Air (M2+).
-            Universal binary — one purchase works on all your devices.
-        </p>
-
-        <p class="faq-q">5. How do I cancel my subscription?</p>
-        <p class="faq-a">
-            Subscriptions are managed through your Apple ID. Go to <strong>iOS Settings → [your name] →
-            Subscriptions → ReverseWorldGo Premium → Cancel Subscription</strong>. Cancellation takes
-            effect at the end of your current billing period. You keep Premium access until then.
-            After cancellation, the app falls back to the free tier automatically.
-        </p>
-
-        <p class="faq-q">6. Can I use ReverseWorldGo offline?</p>
-        <p class="faq-a">
-            Yes — all core features (reverse translation, voice journaling, mirror camera filters,
-            parallel explorer) work fully offline. AI-powered translation caches results locally so
-            repeat lookups are instant with no network required.
-        </p>
-
-        <div class="footer">
-            <p>© 2026 ReverseWorldGo. All rights reserved.</p>
-            <p>Last updated: July 20, 2026</p>
+<!-- ===== Features grid ===== -->
+<section id="features">
+    <p class="section-eyebrow">Everything you need</p>
+    <h2 class="section-title">Support at a glance.</h2>
+    <p class="section-subtitle">Quick answers, real contact, and full transparency on privacy and terms.</p>
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3 class="feature-title">FAQ</h3>
+            <p class="feature-desc">Answers to common questions about subscriptions, data, and supported devices.</p>
+            <a href="#faq" class="feature-link">Read FAQ →</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3 class="feature-title">Privacy Policy</h3>
+            <p class="feature-desc">How we handle your data. GDPR &amp; CCPA compliant. No tracking, no data sales.</p>
+            <a href="./privacy.html" class="feature-link">View Privacy Policy →</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📜</div>
+            <h3 class="feature-title">Terms of Service</h3>
+            <p class="feature-desc">Subscription terms, auto-renewal, refunds via Apple, and Apple's Standard EULA.</p>
+            <a href="./terms.html" class="feature-link">View Terms →</a>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">✉️</div>
+            <h3 class="feature-title">Contact</h3>
+            <p class="feature-desc">Email support, privacy questions, and legal inquiries. 24–48h response time.</p>
+            <a href="#contact" class="feature-link">Get in touch →</a>
         </div>
     </div>
+</section>
+
+<!-- ===== About ===== -->
+<section class="section-alt">
+    <p class="section-eyebrow">About ReverseWorldGo</p>
+    <h2 class="section-title">Reflect differently.</h2>
+    <p class="section-subtitle">
+        ReverseWorldGo is an iOS app that helps you reflect on conversations, thoughts, and experiences
+        from a different angle. Features include AI-powered reverse translation, voice journaling,
+        and a private discovery feed for personal growth. All processing happens on-device.
+    </p>
+
+    <div class="appinfo-card">
+        <div class="info-cell">
+            <span class="label">Developer</span>
+            <span class="value">ZhiFeng Sun</span>
+        </div>
+        <div class="info-cell">
+            <span class="label">App Name</span>
+            <span class="value">ReverseWorldGo</span>
+        </div>
+        <div class="info-cell">
+            <span class="label">Bundle ID</span>
+            <span class="value">com.ggsheng.ReverseWorld</span>
+        </div>
+        <div class="info-cell">
+            <span class="label">Platform</span>
+            <span class="value">iOS · iPhone + iPad</span>
+        </div>
+        <div class="info-cell">
+            <span class="label">App Store</span>
+            <span class="value">Coming soon</span>
+        </div>
+    </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section id="faq">
+    <p class="section-eyebrow">FAQ</p>
+    <h2 class="section-title">Frequently asked.</h2>
+    <p class="section-subtitle">Everything you might want to know before reaching out.</p>
+
+    <div class="faq-list">
+        <div class="faq-item">
+            <p class="faq-q">1. How does ReverseWorldGo's reverse translation work?</p>
+            <p class="faq-a">ReverseWorldGo analyzes your text using on-device AI to generate reversed, mirrored, and upside-down versions in multiple writing styles. All processing happens on your device — nothing is uploaded to remote servers.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-q">2. How do I restore my subscription?</p>
+            <p class="faq-a">Open ReverseWorldGo and go to Profile → Upgrade to Premium → Restore Purchases. You can also manage subscriptions at iOS Settings → [your name] → Subscriptions → ReverseWorldGo Premium. Make sure you're signed in with the same Apple ID that made the original purchase.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-q">3. Where is my data stored? Is it private?</p>
+            <p class="faq-a">All journal entries, mirror photos, voice memos, and reverse translations are stored locally on your device. We do not upload any personal data to our servers, and your content is never used to train AI models. See our <a href="./privacy.html" style="color:var(--accent);">Privacy Policy</a> for full details.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-q">4. What iOS versions and devices are supported?</p>
+            <p class="faq-a">ReverseWorldGo requires iOS 17.0 or later and runs natively on both iPhone and iPad. Tested on iPhone 13 and newer, all iPad Pro models (M1+), and iPad Air (M2+). Universal binary — one purchase works on all your devices.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-q">5. How do I cancel my subscription?</p>
+            <p class="faq-a">Subscriptions are managed through your Apple ID. Go to iOS Settings → [your name] → Subscriptions → ReverseWorldGo Premium → Cancel Subscription. Cancellation takes effect at the end of your current billing period. You keep Premium access until then. After cancellation, the app falls back to the free tier automatically.</p>
+        </div>
+        <div class="faq-item">
+            <p class="faq-q">6. Can I use ReverseWorldGo offline?</p>
+            <p class="faq-a">Yes — all core features (reverse translation, voice journaling, mirror camera filters, parallel explorer) work fully offline. AI-powered translation caches results locally so repeat lookups are instant with no network required.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ===== Contact ===== -->
+<section id="contact" class="section-alt">
+    <p class="section-eyebrow">Get in touch</p>
+    <h2 class="section-title">Contact us.</h2>
+    <p class="section-subtitle">We respond within 24–48 hours. For urgent subscription or billing issues, contact Apple directly via reportaproblem.apple.com.</p>
+    <div class="contact-emails">
+        <a href="mailto:support@techidaily.com" class="email-pill"><span>Support</span>support@techidaily.com</a>
+        <a href="mailto:privacy@techidaily.com" class="email-pill"><span>Privacy</span>privacy@techidaily.com</a>
+        <a href="mailto:legal@techidaily.com" class="email-pill"><span>Legal</span>legal@techidaily.com</a>
+    </div>
+</section>
+
+<!-- ===== Footer ===== -->
+<footer>
+    <div class="footer-inner">
+        <p>Copyright © 2026 ReverseWorldGo · ZhiFeng Sun. All rights reserved.</p>
+        <p>Last updated: July 20, 2026. Manage subscriptions at <a href="https://apps.apple.com/account/subscriptions">Apple Subscriptions</a>.</p>
+        <p style="margin-top:16px;">Your use of ReverseWorldGo is also subject to <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Apple's Standard EULA</a>.</p>
+    </div>
+</footer>
+
 </body>
 </html>
