@@ -2,11 +2,12 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="description" content="ReverseWorldGo — Official Support. Mirror your world, in reverse.">
+    <meta name="theme-color" content="#ffffff">
     <title>ReverseWorldGo — Support</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         :root {
             --bg: #ffffff;
             --bg-alt: #f5f5f7;
@@ -15,17 +16,24 @@
             --accent: #0071e3;
             --accent-hover: #0077ed;
             --divider: #d2d2d7;
+            --nav-h: 48px;
         }
-        html { scroll-behavior: smooth; }
+        html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+            font-size: 17px;
             line-height: 1.5;
             color: var(--text);
             background: var(--bg);
             -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            overflow-x: hidden;
         }
+        a { color: var(--accent); text-decoration: none; transition: opacity 0.18s ease; }
+        a:hover { opacity: 0.85; }
+        button { font: inherit; cursor: pointer; border: 0; background: transparent; color: inherit; }
 
-        /* ===== Apple-style sticky nav bar ===== */
+        /* ===== Apple-style sticky nav (with safe-area + hamburger) ===== */
         .nav {
             position: sticky;
             top: 0;
@@ -34,11 +42,13 @@
             backdrop-filter: saturate(180%) blur(20px);
             -webkit-backdrop-filter: saturate(180%) blur(20px);
             border-bottom: 1px solid var(--divider);
-            height: 48px;
+            min-height: var(--nav-h);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0 22px;
+            padding: 0 max(22px, env(safe-area-inset-left));
+            padding-right: max(22px, env(safe-area-inset-right));
+            padding-top: env(safe-area-inset-top);
             font-size: 14px;
         }
         .nav-logo {
@@ -46,22 +56,55 @@
             font-size: 17px;
             letter-spacing: -0.3px;
             color: var(--text);
-            text-decoration: none;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            touch-action: manipulation;
         }
-        .nav-links { display: flex; gap: 28px; }
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+        }
         .nav-links a {
             color: var(--text);
-            text-decoration: none;
-            font-weight: 400;
             opacity: 0.88;
-            transition: opacity 0.2s;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 4px;
+            touch-action: manipulation;
         }
         .nav-links a:hover { opacity: 1; }
+        /* Hamburger (hidden on desktop) */
+        .nav-toggle {
+            display: none;
+            min-width: 44px;
+            min-height: 44px;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+            touch-action: manipulation;
+        }
+        .nav-toggle span,
+        .nav-toggle span::before,
+        .nav-toggle span::after {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 1.5px;
+            background: var(--text);
+            border-radius: 2px;
+            transition: transform 0.25s ease;
+        }
+        .nav-toggle span { position: relative; }
+        .nav-toggle span::before { position: absolute; top: -7px; }
+        .nav-toggle span::after { position: absolute; top: 7px; }
 
-        /* ===== Hero (Apple-style large) ===== */
+        /* ===== Hero ===== */
         .hero {
             text-align: center;
-            padding: 120px 24px 96px;
+            padding: max(120px, env(safe-area-inset-top) + 80px) 24px 96px;
             background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);
         }
         .hero-label {
@@ -72,7 +115,7 @@
             letter-spacing: -0.2px;
         }
         .hero-title {
-            font-size: 80px;
+            font-size: clamp(40px, 9vw, 80px);
             line-height: 1.05;
             font-weight: 700;
             letter-spacing: -2px;
@@ -80,8 +123,8 @@
             color: var(--text);
         }
         .hero-subtitle {
-            font-size: 28px;
-            line-height: 1.2;
+            font-size: clamp(19px, 3.2vw, 28px);
+            line-height: 1.25;
             color: var(--text);
             font-weight: 400;
             max-width: 720px;
@@ -89,17 +132,20 @@
             letter-spacing: -0.4px;
         }
         .hero-cta {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
             background: var(--accent);
             color: #fff;
-            padding: 14px 32px;
+            padding: 12px 28px;
             border-radius: 980px;
-            text-decoration: none;
             font-size: 17px;
             font-weight: 400;
-            transition: background 0.2s;
+            transition: background 0.2s ease, transform 0.15s ease;
+            touch-action: manipulation;
         }
-        .hero-cta:hover { background: var(--accent-hover); }
+        .hero-cta:hover { background: var(--accent-hover); opacity: 1; }
+        .hero-cta:active { transform: scale(0.97); }
         .hero-meta {
             margin-top: 56px;
             color: var(--text-secondary);
@@ -108,50 +154,47 @@
 
         /* ===== Section generic ===== */
         section {
-            padding: 96px 24px;
+            padding: clamp(56px, 8vw, 96px) max(20px, env(safe-area-inset-left)) clamp(56px, 8vw, 96px) max(20px, env(safe-area-inset-right));
             max-width: 1080px;
             margin: 0 auto;
         }
         .section-alt { background: var(--bg-alt); max-width: none; }
         .section-alt > * { max-width: 1080px; margin-left: auto; margin-right: auto; }
-
         .section-eyebrow {
             font-size: 17px;
             color: var(--accent);
-            text-transform: none;
             margin-bottom: 12px;
             font-weight: 400;
             letter-spacing: -0.2px;
         }
         .section-title {
-            font-size: 48px;
+            font-size: clamp(28px, 5vw, 48px);
             line-height: 1.1;
             font-weight: 700;
             letter-spacing: -1px;
             margin-bottom: 16px;
-            color: var(--text);
         }
         .section-subtitle {
-            font-size: 21px;
+            font-size: clamp(17px, 2.4vw, 21px);
             color: var(--text-secondary);
             max-width: 720px;
             font-weight: 400;
             letter-spacing: -0.2px;
         }
 
-        /* ===== Feature grid (Apple 3-column) ===== */
+        /* ===== Feature grid ===== */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 24px;
-            margin-top: 48px;
+            gap: clamp(16px, 2vw, 24px);
+            margin-top: clamp(32px, 5vw, 48px);
         }
         .feature-card {
             background: #fff;
             border-radius: 18px;
-            padding: 40px 32px;
+            padding: clamp(28px, 4vw, 40px) clamp(24px, 3vw, 32px);
             box-shadow: 0 4px 24px rgba(0,0,0,0.04);
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
         .feature-card:hover {
             transform: translateY(-2px);
@@ -169,122 +212,190 @@
             font-size: 24px;
         }
         .feature-title {
-            font-size: 21px;
+            font-size: clamp(19px, 2.6vw, 21px);
             font-weight: 600;
             margin-bottom: 8px;
             letter-spacing: -0.3px;
         }
         .feature-desc {
             color: var(--text-secondary);
-            font-size: 17px;
-            line-height: 1.4;
+            font-size: clamp(15px, 2.2vw, 17px);
+            line-height: 1.45;
         }
         .feature-link {
-            display: inline-block;
-            margin-top: 16px;
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            padding: 8px 0;
+            margin-top: 8px;
             color: var(--accent);
-            text-decoration: none;
             font-size: 15px;
             font-weight: 500;
+            touch-action: manipulation;
         }
 
-        /* ===== Contact CTA section ===== */
-        .contact-cta {
-            background: linear-gradient(180deg, #f5f5f7 0%, #ffffff 100%);
-            padding: 96px 24px;
-            text-align: center;
-        }
-        .contact-emails {
-            display: inline-flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 32px;
-        }
-        .email-pill {
-            background: #fff;
-            padding: 12px 24px;
-            border-radius: 980px;
-            text-decoration: none;
-            color: var(--text);
-            font-size: 15px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-            transition: transform 0.15s;
-        }
-        .email-pill:hover { transform: translateY(-1px); }
-        .email-pill span {
-            color: var(--text-secondary);
-            margin-right: 6px;
-            font-size: 13px;
-        }
-
-        /* ===== FAQ ===== */
-        .faq-list { margin-top: 48px; max-width: 820px; margin-left: auto; margin-right: auto; }
-        .faq-item {
-            border-bottom: 1px solid var(--divider);
-            padding: 24px 0;
-        }
-        .faq-q {
-            font-weight: 600;
-            font-size: 21px;
-            color: var(--text);
-            margin-bottom: 12px;
-            letter-spacing: -0.3px;
-        }
-        .faq-a {
-            color: var(--text-secondary);
-            font-size: 17px;
-            line-height: 1.5;
-        }
-
-        /* ===== App info card ===== */
+        /* ===== About / App info ===== */
         .appinfo-card {
             background: #fff;
             border-radius: 18px;
-            padding: 32px 40px;
+            padding: clamp(20px, 3vw, 32px) clamp(20px, 3vw, 40px);
             box-shadow: 0 4px 24px rgba(0,0,0,0.04);
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 24px;
-            margin-top: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: clamp(16px, 2vw, 24px);
+            margin-top: clamp(24px, 4vw, 32px);
         }
         .info-cell .label {
             display: block;
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 12px;
             margin-bottom: 4px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
         .info-cell .value {
             color: var(--text);
-            font-size: 17px;
+            font-size: clamp(15px, 2.2vw, 17px);
             font-weight: 500;
+            word-break: break-word;
         }
 
-        /* ===== Footer (Apple-style minimal) ===== */
+        /* ===== FAQ ===== */
+        .faq-list { margin-top: clamp(28px, 4vw, 48px); max-width: 820px; margin-left: auto; margin-right: auto; }
+        .faq-item {
+            border-bottom: 1px solid var(--divider);
+            padding: clamp(18px, 2.5vw, 24px) 0;
+        }
+        .faq-q {
+            font-weight: 600;
+            font-size: clamp(17px, 2.4vw, 21px);
+            color: var(--text);
+            margin-bottom: 12px;
+            letter-spacing: -0.3px;
+        }
+        .faq-a {
+            color: var(--text-secondary);
+            font-size: clamp(15px, 2.2vw, 17px);
+            line-height: 1.55;
+        }
+        .faq-a a { color: var(--accent); font-weight: 500; }
+
+        /* ===== Contact CTA ===== */
+        .contact-emails {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            margin-top: clamp(24px, 4vw, 32px);
+        }
+        .email-pill {
+            display: inline-flex;
+            align-items: center;
+            min-height: 44px;
+            background: #fff;
+            padding: 10px 22px;
+            border-radius: 980px;
+            color: var(--text);
+            font-size: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            touch-action: manipulation;
+        }
+        .email-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); opacity: 1; }
+        .email-pill:active { transform: scale(0.97); }
+        .email-pill span {
+            color: var(--text-secondary);
+            margin-right: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ===== Footer ===== */
         footer {
             background: var(--bg-alt);
-            padding: 32px 24px 24px;
+            padding: clamp(24px, 4vw, 32px) max(20px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-right));
             font-size: 12px;
             color: var(--text-secondary);
-            line-height: 1.4;
+            line-height: 1.5;
         }
         .footer-inner {
             max-width: 1080px;
             margin: 0 auto;
         }
         .footer p { margin-bottom: 8px; }
-        .footer a {
-            color: var(--text-secondary);
-            text-decoration: underline;
+        .footer a { color: var(--text-secondary); text-decoration: underline; }
+
+        /* ===== Mobile drawer (hamburger nav) ===== */
+        .nav-drawer {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.25s ease, visibility 0.25s;
+            z-index: 99;
+            padding-top: var(--nav-h);
+        }
+        .nav-drawer.open { opacity: 1; visibility: visible; }
+        .nav-drawer-inner {
+            background: var(--bg);
+            padding: 16px max(20px, env(safe-area-inset-left)) calc(24px + env(safe-area-inset-bottom));
+            display: flex;
+            flex-direction: column;
+        }
+        .nav-drawer-inner a {
+            color: var(--text);
+            font-size: 17px;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            border-bottom: 1px solid var(--divider);
+            opacity: 0.88;
+            touch-action: manipulation;
+        }
+        .nav-drawer-inner a:last-child { border-bottom: 0; }
+
+        /* ===== Responsive: tablet ===== */
+        @media (max-width: 1024px) {
+            .nav-links { gap: 18px; }
+            .nav-links a { font-size: 13px; }
+            .hero { padding-top: 80px; padding-bottom: 80px; }
+            .hero-meta { margin-top: 40px; }
         }
 
+        /* ===== Responsive: mobile ===== */
         @media (max-width: 768px) {
-            .hero-title { font-size: 48px; letter-spacing: -1px; }
-            .hero-subtitle { font-size: 21px; }
-            .section-title { font-size: 32px; letter-spacing: -0.5px; }
-            .nav-links { gap: 16px; font-size: 13px; }
+            .nav-links { display: none; }
+            .nav-toggle { display: inline-flex; }
+            .hero { padding-top: 64px; padding-bottom: 56px; }
+            .hero-label { font-size: 17px; }
+            .hero-title { letter-spacing: -1px; }
+            .hero-subtitle { margin-bottom: 28px; }
+            .hero-meta { margin-top: 32px; font-size: 13px; }
+            section { padding-top: 56px; padding-bottom: 56px; }
+            .section-eyebrow { font-size: 15px; }
+            .features { gap: 14px; }
+            .feature-card { padding: 24px 22px; }
+            .contact-emails { gap: 10px; }
+            .email-pill { padding: 10px 18px; font-size: 14px; }
+            .appinfo-card { padding: 22px; }
+        }
+
+        /* ===== Responsive: small mobile ===== */
+        @media (max-width: 480px) {
+            .hero-title { letter-spacing: -0.5px; }
+            .hero-cta { padding: 11px 24px; font-size: 16px; }
+            .feature-icon { width: 40px; height: 40px; font-size: 20px; }
+            .appinfo-card { grid-template-columns: 1fr 1fr; }
+        }
+
+        /* Reduced motion (a11y) */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
         }
     </style>
 </head>
@@ -300,7 +411,21 @@
         <a href="./terms.html">Terms</a>
         <a href="#contact">Contact</a>
     </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span>
+    </button>
 </nav>
+
+<!-- ===== Mobile drawer ===== -->
+<div class="nav-drawer" id="navDrawer" role="dialog" aria-label="Navigation menu">
+    <div class="nav-drawer-inner">
+        <a href="#features">Features</a>
+        <a href="#faq">FAQ</a>
+        <a href="./privacy.html">Privacy</a>
+        <a href="./terms.html">Terms</a>
+        <a href="#contact">Contact</a>
+    </div>
+</div>
 
 <!-- ===== Hero ===== -->
 <header class="hero">
@@ -311,7 +436,7 @@
     <p class="hero-meta">iOS 17.0+ · iPhone + iPad · Universal binary</p>
 </header>
 
-<!-- ===== Features grid ===== -->
+<!-- ===== Features ===== -->
 <section id="features">
     <p class="section-eyebrow">Everything you need</p>
     <h2 class="section-title">Support at a glance.</h2>
@@ -353,7 +478,6 @@
         from a different angle. Features include AI-powered reverse translation, voice journaling,
         and a private discovery feed for personal growth. All processing happens on-device.
     </p>
-
     <div class="appinfo-card">
         <div class="info-cell">
             <span class="label">Developer</span>
@@ -383,7 +507,6 @@
     <p class="section-eyebrow">FAQ</p>
     <h2 class="section-title">Frequently asked.</h2>
     <p class="section-subtitle">Everything you might want to know before reaching out.</p>
-
     <div class="faq-list">
         <div class="faq-item">
             <p class="faq-q">1. How does ReverseWorldGo's reverse translation work?</p>
@@ -395,7 +518,7 @@
         </div>
         <div class="faq-item">
             <p class="faq-q">3. Where is my data stored? Is it private?</p>
-            <p class="faq-a">All journal entries, mirror photos, voice memos, and reverse translations are stored locally on your device. We do not upload any personal data to our servers, and your content is never used to train AI models. See our <a href="./privacy.html" style="color:var(--accent);">Privacy Policy</a> for full details.</p>
+            <p class="faq-a">All journal entries, mirror photos, voice memos, and reverse translations are stored locally on your device. We do not upload any personal data to our servers, and your content is never used to train AI models. See our <a href="./privacy.html">Privacy Policy</a> for full details.</p>
         </div>
         <div class="faq-item">
             <p class="faq-q">4. What iOS versions and devices are supported?</p>
@@ -432,6 +555,39 @@
         <p style="margin-top:16px;">Your use of ReverseWorldGo is also subject to <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/">Apple's Standard EULA</a>.</p>
     </div>
 </footer>
+
+<script>
+    // Hamburger menu toggle (Apple-style mobile UX)
+    (function() {
+        var toggle = document.getElementById('navToggle');
+        var drawer = document.getElementById('navDrawer');
+        if (!toggle || !drawer) return;
+        function close() {
+            drawer.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        }
+        function open() {
+            drawer.classList.add('open');
+            toggle.setAttribute('aria-expanded', 'true');
+        }
+        toggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (drawer.classList.contains('open')) close();
+            else open();
+        });
+        drawer.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A') close();
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') close();
+        });
+        // Close on resize to desktop
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) close();
+        });
+    })();
+</script>
 
 </body>
 </html>
