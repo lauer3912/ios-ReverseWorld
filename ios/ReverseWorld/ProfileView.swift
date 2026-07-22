@@ -578,20 +578,18 @@ struct PremiumSection: View {
             .accessibilityLabel(premiumManager.isPremium ? "Premium active" : "Unlock premium")
 
             // P7: Restore Purchases always visible (Apple 3.1.1 requirement)
-            if !premiumManager.isPremium {
-                Button {
-                    onRestore()
-                } label: {
-                    HStack {
-                        Image(systemName: "arrow.clockwise.circle")
-                        Text(L10n.profileRestorePurchases)
-                    }
-                    .font(.caption)
-                    .foregroundColor(Theme.Text.secondary)
+            Button {
+                onRestore()
+            } label: {
+                HStack {
+                    Image(systemName: "arrow.clockwise.circle")
+                    Text(L10n.profileRestorePurchases)
                 }
-                .padding(.horizontal)
-                .accessibilityLabel("Restore previous purchases")
+                .font(.caption)
+                .foregroundColor(Theme.Text.secondary)
             }
+            .padding(.horizontal)
+            .accessibilityLabel("Restore previous purchases")
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView(isPresented: $showPaywall)
@@ -606,13 +604,17 @@ struct PaywallView: View {
     @Binding var isPresented: Bool
     @State private var purchasing = false
     @State private var purchaseError: String?
+    @State private var restoring = false
+    @State private var showRestoreAlert = false
+    @State private var restoreMessage = ""
 
     var body: some View {
         NavigationStack {
             ZStack {
                 Theme.Background.primary.ignoresSafeArea()
 
-                VStack(spacing: Theme.Layout.sectionSpacing) {
+                ScrollView {
+                    VStack(spacing: Theme.Layout.sectionSpacing) {
                     VStack(spacing: 8) {
                         Image(systemName: "crown.fill")
                             .font(.system(size: 60))
@@ -684,20 +686,43 @@ struct PaywallView: View {
                     }
                     .padding(.horizontal)
 
-                    // Per Apple 3.1.2(a) + 5.1.1(ii): paywall MUST include Restore + Terms + Privacy links inline
-                    HStack(spacing: 16) {
-                        Button {
-                            Task {
-                                await premiumManager.restorePurchases()
-                                isPresented = premiumManager.isPremium
+                    if let error = purchaseError {
+                        Text(error)
+                            .font(.caption)
+                            .foregroundColor(Theme.Accent.danger)
+                    }
+                }
+                .padding(.bottom, 16)
+            }
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                VStack(spacing: 10) {
+                    // Apple Guideline 3.1.1: distinct, user-initiated restore control stays visible.
+                    Button(action: performRestore) {
+                        HStack(spacing: 8) {
+                            if restoring {
+                                ProgressView()
+                                    .tint(Theme.Text.primary)
+                            } else {
+                                Image(systemName: "arrow.clockwise.circle.fill")
                             }
-                        } label: {
                             Text(L10n.profileRestorePurchases)
-                                .font(.caption)
-                                .foregroundColor(Theme.Text.secondary)
                         }
-                        .accessibilityLabel("Restore previous purchases")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundColor(Theme.Text.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Theme.Background.elevated)
+                        .clipShape(RoundedRectangle(cornerRadius: Theme.Card.cornerRadius))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Theme.Card.cornerRadius)
+                                .stroke(Theme.Text.secondary.opacity(0.5), lineWidth: 1)
+                        )
+                    }
+                    .disabled(restoring)
+                    .accessibilityLabel("Restore previous purchases")
+                    .accessibilityHint("Restore your previous in-app purchases and subscriptions")
 
+                    HStack(spacing: 24) {
                         Button {
                             if let url = URL(string: "https://lauer3912.github.io/ios-ReverseWorld/TermsOfService.html") {
                                 openURL(url)
@@ -720,15 +745,11 @@ struct PaywallView: View {
                         }
                         .accessibilityLabel("Privacy Policy")
                     }
-                    .padding(.bottom)
-                    .padding(.horizontal)
-
-                    if let error = purchaseError {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(Theme.Accent.danger)
-                    }
                 }
+                .padding(.horizontal)
+                .padding(.top, 12)
+                .padding(.bottom, 8)
+                .background(Theme.Background.card)
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -737,7 +758,17 @@ struct PaywallView: View {
                         .foregroundColor(Theme.Text.primary)
                 }
             }
+            .alert(L10n.profileRestorePurchases, isPresented: $showRestoreAlert) {
+                Button(L10n.ok, role: .cancel) {
+                    if premiumManager.isPremium {
+                        isPresented = false
+                    }
+                }
+            } message: {
+                Text(restoreMessage)
+            }
         }
+    }
     }
 
     private func purchase(product: Product) {
@@ -756,6 +787,25 @@ struct PaywallView: View {
                 purchaseError = error.localizedDescription
             }
             purchasing = false
+        }
+    }
+
+    private func performRestore() {
+        // Apple 3.1.1: restore MUST be user-initiated (no auto on launch).
+        restoring = true
+        Task {
+            await premiumManager.restorePurchases()
+            if premiumManager.isPremium {
+                restoreMessage = L10n.restoreSuccess
+                showRestoreAlert = true
+            } else if let error = premiumManager.restoreError {
+                restoreMessage = error
+                showRestoreAlert = true
+            } else {
+                restoreMessage = L10n.restoreNotFound
+                showRestoreAlert = true
+            }
+            restoring = false
         }
     }
 }
