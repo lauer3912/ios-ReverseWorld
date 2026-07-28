@@ -502,22 +502,25 @@ struct AboutView: View {
 struct PremiumSection: View {
     @EnvironmentObject var premiumManager: PremiumManager  // P3: use shared via Environment
     @State private var showPaywall: Bool = {
-        // Diagnostic auto-open for ASC IAP screenshot capture (07-01 21:10 CST)
+#if DEBUG
+        // Diagnostic auto-open for ASC IAP screenshot capture
         // Usage: launch with `-autoPaywall` arg to make paywall sheet appear immediately.
-        // Idle state otherwise (default false) — no impact on production behavior.
-        CommandLine.arguments.contains("-autoPaywall")
+        return CommandLine.arguments.contains("-autoPaywall")
+#else
+        return false
+#endif
     }()
     let onRestore: () -> Void  // P7: restore action from parent
     // Diagnostic: choose which plan to highlight (Default = "yearly")
-    // Usage: launch with `-highlightPlan monthly` to highlight Monthly, `-highlightPlan yearly` (default) for Yearly.
-    // 07-01 21:30 CST added per佛老爷 "需要两张图 (年+月)"
     @State private var highlightPlan: String = PremiumSection.parseHighlightPlan()
     static func parseHighlightPlan() -> String {
+#if DEBUG
         let args = CommandLine.arguments
         if let i = args.firstIndex(of: "-highlightPlan"),
            i + 1 < args.count {
             return args[i + 1].lowercased()
         }
+#endif
         return "yearly"
     }
 
@@ -624,7 +627,7 @@ struct PaywallView: View {
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(Theme.Text.primary)
-                        Text(String(format: L10n.paywallSubtitleFormat, premiumManager.displayPrice))
+                        Text(String(format: L10n.paywallSubtitleFormat, premiumManager.yearlyDisplayPrice))
                             .font(.subheadline)
                             .foregroundColor(Theme.Text.secondary)
                             .multilineTextAlignment(.center)
@@ -639,9 +642,8 @@ struct PaywallView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         PremiumFeatureRow(icon: "camera.viewfinder", title: L10n.paywallFeatureFilters)
                         PremiumFeatureRow(icon: "text.bubble.fill", title: L10n.paywallFeatureTranslator)
-                        PremiumFeatureRow(icon: "scroll.fill", title: L10n.paywallFeatureJournal)
                         PremiumFeatureRow(icon: "bell.fill", title: L10n.paywallFeatureRules)
-                        PremiumFeatureRow(icon: "xmark.circle.fill", title: L10n.paywallFeatureNoAds)
+                        PremiumFeatureRow(icon: "film.stack.fill", title: L10n.paywallFeatureHDExport)
                     }
                     .padding(.horizontal)
                     .padding(.top, 16)
@@ -652,7 +654,7 @@ struct PaywallView: View {
                         if let yearly = premiumManager.yearlyProduct {
                             PurchaseButton(
                                 title: L10n.paywallYearly,
-                                subtitle: "Best value • \(premiumManager.yearlyDisplayPrice)/year",
+                                subtitle: "Best value • 7-day free trial • \(premiumManager.yearlyDisplayPrice)/year",
                                 product: yearly,
                                 isPopular: PremiumSection.parseHighlightPlan() != "monthly",
                                 purchasing: $purchasing,
@@ -660,10 +662,9 @@ struct PaywallView: View {
                             )
                         } else {
                             // Yearly not loaded (pricing not configured in ASC yet)
-                            // Per #44 SOP: disable button + show "Coming Soon" instead of fake-tappable
                             PurchaseButton(
                                 title: L10n.paywallYearly,
-                                subtitle: "Coming Soon • Save 17% with annual plan",
+                                subtitle: "Coming Soon • 7-day free trial with annual plan",
                                 product: nil,
                                 isPopular: PremiumSection.parseHighlightPlan() != "monthly",
                                 purchasing: $purchasing,

@@ -11,6 +11,7 @@ struct VideoInversionView: View {
     @StateObject private var recorder = VideoInversionRecorder()
     @State private var isReversed = false
     @State private var isPlaying = false
+    @StateObject private var permissionsManager = PermissionsManager()
 
     var body: some View {
         Group {
@@ -91,11 +92,25 @@ struct VideoInversionView: View {
                         error = nil
                     }
                 } else {
-                    do {
-                        try recorder.startRecording()
-                        error = nil
-                    } catch {
-                        self.error = "Cannot record: \(error.localizedDescription)"
+                    // 先请求相机和麦克风权限
+                    Task {
+                        let cameraStatus = await permissionsManager.requestCamera()
+                        let micStatus = await permissionsManager.requestMicrophone()
+                        
+                        if cameraStatus.isGranted && micStatus.isGranted {
+                            do {
+                                try recorder.startRecording()
+                                error = nil
+                            } catch {
+                                await MainActor.run {
+                                    self.error = "Cannot record: \(error.localizedDescription)"
+                                }
+                            }
+                        } else {
+                            await MainActor.run {
+                                self.error = "Camera and microphone permissions are required to record video. Please enable them in Settings."
+                            }
+                        }
                     }
                 }
             } label: {
@@ -203,6 +218,22 @@ final class VideoInversionRecorder: NSObject, ObservableObject, AVCaptureFileOut
     private var completion: ((URL?) -> Void)?
 
     func startRecording() throws {
+        // 检查权限状态
+        let videoAuth = AVCaptureDevice.authorizationStatus(for: .video)
+        let audioAuth = AVCaptureDevice.authorizationStatus(for: .audio)
+        
+        guard videoAuth == .authorized else {
+            throw NSError(domain: "VideoInversionRecorder", code: -1, userInfo: [
+                NSLocalizedDescriptionKey: "Camera permission is required. Please enable it in Settings."
+            ])
+        }
+        
+        guard audioAuth == .authorized else {
+            throw NSError(domain: "VideoInversionRecorder", code: -2, userInfo: [
+                NSLocalizedDescriptionKey: "Microphone permission is required. Please enable it in Settings."
+            ])
+        }
+        
         let captureSession = AVCaptureSession()
         captureSession.beginConfiguration()
         captureSession.sessionPreset = .high

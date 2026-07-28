@@ -6,6 +6,7 @@ struct ContentView: View {
     @State private var showProfileSheet = false
 
     static func initialTabFromLaunchArgs() -> Tab {
+#if DEBUG
         let args = CommandLine.arguments
         if let i = args.firstIndex(of: "-initialTab"),
            i + 1 < args.count,
@@ -18,6 +19,7 @@ struct ContentView: View {
            let t = Tab(rawValue: args[i + 1]) {
             return t
         }
+#endif
         return .home
     }
 

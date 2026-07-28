@@ -114,7 +114,7 @@ struct PermissionsView: View {
                             PermissionRow(
                                 icon: "waveform",
                                 title: "Speech Recognition",
-                                description: "Convert your voice into reversed text",
+                                description: "Convert your voice to text for reverse translation features",
                                 status: manager.speechRecognition,
                                 action: { Task { await requestSpeechRecognition() } }
                             )

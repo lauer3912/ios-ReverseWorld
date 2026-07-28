@@ -71,6 +71,16 @@ enum VisualFilter: String, CaseIterable, Identifiable, Hashable {
     case mono = "Mono"
 
     var id: String { rawValue }
+    
+    /// 是否为 Premium 专属滤镜
+    var isPremium: Bool {
+        switch self {
+        case .none, .mirror, .invert, .hueRotate, .posterize:
+            return false
+        case .noir, .chrome, .sepia, .instant, .mono:
+            return true
+        }
+    }
 
     var icon: String {
         switch self {

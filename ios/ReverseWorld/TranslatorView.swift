@@ -8,11 +8,21 @@ struct TranslatorView: View {
     @State private var cachedMirror: String = ""
     @State private var cachedUpsideDown: String = ""
     @State private var cachedWordOrder: String = ""
+    @State private var showPaywall = false
+    @ObservedObject private var premiumManager = PremiumManager.shared
 
     enum ReverseMode: String, CaseIterable, Identifiable {
         case reverse, mirror, upsideDown, wordOrder
 
         var id: String { rawValue }
+        
+        /// 是否为 Premium 专属模式
+        var isPremium: Bool {
+            switch self {
+            case .reverse, .mirror: return false
+            case .upsideDown, .wordOrder: return true
+            }
+        }
 
         var displayName: String {
             switch self {
@@ -161,11 +171,19 @@ struct TranslatorView: View {
             HStack(spacing: 12) {
                 ForEach(ReverseMode.allCases) { mode in
                     Button {
-                        selectedMode = mode
+                        if mode.isPremium && !premiumManager.isPremium {
+                            showPaywall = true
+                        } else {
+                            selectedMode = mode
+                        }
                     } label: {
                         HStack(spacing: 6) {
                             Image(systemName: mode.icon)
                             Text(mode.displayName)
+                            if mode.isPremium {
+                                Image(systemName: "lock.fill")
+                                    .font(.system(size: 9))
+                            }
                         }
                         .font(.caption)
                         .padding(.horizontal, 16)
@@ -173,11 +191,26 @@ struct TranslatorView: View {
                         .background(selectedMode == mode ? Theme.Accent.primary : Theme.Background.card)
                         .foregroundColor(Theme.Text.primary)
                         .clipShape(Capsule())
+                        .overlay(
+                            Group {
+                                if mode.isPremium && !premiumManager.isPremium {
+                                    Capsule()
+                                        .stroke(Theme.Accent.warning.opacity(0.5), lineWidth: 1)
+                                }
+                            }
+                        )
                     }
-                    .accessibilityLabel("\(mode.displayName) mode\(selectedMode == mode ? ", selected" : "")")
+                    .accessibilityLabel("\(mode.displayName) mode\(mode.isPremium && !premiumManager.isPremium ? " (Premium, tap to subscribe)" : "")\(selectedMode == mode ? ", selected" : "")")
                 }
             }
             .padding(.horizontal)
+        }
+        .sheet(isPresented: $showPaywall) {
+            // 付费墙 - 这里应该显示PaywallView，假设ProfileView中有相关组件
+            // 简化处理：显示一个提示
+            PremiumLockView(featureName: "Advanced Translator Modes") {
+                showPaywall = false
+            }
         }
     }
 
@@ -246,6 +279,51 @@ enum UpsideDownMap {
 
     static func char(for c: Character) -> String {
         return map[c.lowercased().first ?? Character(" ")] ?? String(c)
+    }
+}
+
+/// Premium 功能锁定提示视图
+struct PremiumLockView: View {
+    let featureName: String
+    let onDismiss: () -> Void
+    
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Theme.Background.primary.ignoresSafeArea()
+                VStack(spacing: 20) {
+                    Image(systemName: "lock.fill")
+                        .font(.system(size: 50))
+                        .foregroundStyle(LinearGradient(colors: [.purple, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    
+                    Text("Premium Feature")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    
+                    Text("\(featureName) is available to Premium subscribers only.")
+                        .font(.body)
+                        .foregroundColor(Theme.Text.secondary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    Text("Unlock all filters, translator modes, and more with Premium.")
+                        .font(.caption)
+                        .foregroundColor(Theme.Text.tertiary)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    Spacer()
+                }
+                .padding(.top, 60)
+            }
+            .navigationTitle("Upgrade to Premium")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") { onDismiss() }
+                }
+            }
+        }
     }
 }
 

@@ -1,6 +1,7 @@
 import SwiftUI
 import AVFoundation
 import UIKit
+import Photos
 
 /// Real camera preview using AVCaptureSession
 struct CameraPreview: UIViewRepresentable {
@@ -37,6 +38,9 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
     @Published var capturedImage: UIImage?
     @Published var error: String?
     @Published var useFlash: Bool = false  // C3: flash toggle
+    @Published var showSaveSuccess: Bool = false
+    @Published var saveError: String?
+    @Published var isPhotoLibraryDenied: Bool = false
 
     let session = AVCaptureSession()
 
@@ -161,8 +165,51 @@ final class CameraController: NSObject, ObservableObject, AVCapturePhotoCaptureD
         guard let data = photo.fileDataRepresentation(),
               let image = UIImage(data: data) else { return }
         DispatchQueue.main.async { [weak self] in
-            self?.capturedImage = image
-            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+            guard let self = self else { return }
+            self.capturedImage = image
+            // Check photo library permission before saving
+            self.checkPhotoPermissionAndSave(image: image)
+        }
+    }
+
+    private func checkPhotoPermissionAndSave(image: UIImage) {
+        let status = PHPhotoLibrary.authorizationStatus(for: .addOnly)
+        switch status {
+        case .authorized, .limited:
+            UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+        case .notDetermined:
+            PHPhotoLibrary.requestAuthorization(for: .addOnly) { [weak self] newStatus in
+                DispatchQueue.main.async {
+                    guard let self = self else { return }
+                    if newStatus == .authorized || newStatus == .limited {
+                        UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+                    } else {
+                        self.isPhotoLibraryDenied = true
+                        self.saveError = "Photo library access is required to save photos. Please enable it in Settings."
+                    }
+                }
+            }
+        case .denied, .restricted:
+            isPhotoLibraryDenied = true
+            saveError = "Photo library access is required to save photos. Please enable it in Settings."
+        @unknown default:
+            UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.image(_:didFinishSavingWithError:contextInfo:)), nil)
+        }
+    }
+    
+    @objc private func image(_ image: UIImage, didFinishSavingWithError error: Error?, contextInfo: UnsafeRawPointer) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            if let error = error {
+                self.saveError = "Failed to save photo: \(error.localizedDescription)"
+                AppLog.camera.error("Save photo failed: \(error.localizedDescription, privacy: .public)")
+            } else {
+                self.showSaveSuccess = true
+                // 2秒后自动隐藏成功提示
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { [weak self] in
+                    self?.showSaveSuccess = false
+                }
+            }
         }
     }
 }

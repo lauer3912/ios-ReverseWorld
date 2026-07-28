@@ -8,9 +8,11 @@ struct ReverseWorldApp: App {
     @AppStorage("isDarkMode") private var isDarkMode = true
 
     init() {
+#if DEBUG
         if CommandLine.arguments.contains("-forceDarkMode") {
             UserDefaults.standard.set(true, forKey: "isDarkMode")
         }
+#endif
     }
 
     var body: some Scene {

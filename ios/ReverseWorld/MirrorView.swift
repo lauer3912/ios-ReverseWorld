@@ -7,6 +7,8 @@ struct MirrorView: View {
     @State private var showCaptureEffect = false
     @State private var showSavedAlert = false
     @State private var showPermissionAlert = false
+    @State private var showSaveError = false
+    @State private var showPhotoPermissionAlert = false
     @StateObject private var camera = CameraController()
     @Environment(\.openURL) private var openURL
 
@@ -47,6 +49,41 @@ struct MirrorView: View {
             Button(L10n.cancel, role: .cancel) {}
         } message: {
             Text(L10n.mirrorAuthDeniedMessage)
+        }
+        // 保存失败提示
+        .alert("Save Failed", isPresented: $showSaveError) {
+            Button(L10n.ok, role: .cancel) {
+                camera.saveError = nil
+            }
+            if camera.isPhotoLibraryDenied {
+                Button(L10n.openSettings) {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                    camera.isPhotoLibraryDenied = false
+                    camera.saveError = nil
+                }
+            }
+        } message: {
+            Text(camera.saveError ?? "Could not save photo to library.")
+        }
+        // 监听相册权限被拒
+        .onChange(of: camera.isPhotoLibraryDenied) { _, newValue in
+            if newValue {
+                showPhotoPermissionAlert = true
+            }
+        }
+        // 监听保存错误
+        .onChange(of: camera.saveError) { _, newValue in
+            if newValue != nil {
+                showSaveError = true
+            }
+        }
+        // 监听保存成功
+        .onChange(of: camera.showSaveSuccess) { _, newValue in
+            if newValue {
+                showSavedAlert = true
+            }
         }
     }
 
@@ -206,7 +243,7 @@ struct MirrorView: View {
             showCaptureEffect = false
         }
         camera.capturePhoto()
-        showSavedAlert = true  // M2
+        // showSavedAlert 现在通过 onChange(of: camera.showSaveSuccess) 自动触发
     }
 }
 

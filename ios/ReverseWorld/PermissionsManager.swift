@@ -77,10 +77,10 @@ final class PermissionsManager: ObservableObject {
     func refreshAll() {
         camera = Self.cameraStatus()
         microphone = Self.microphoneStatus()
+        speechRecognition = Self.speechRecognitionStatus()
         let photoPair = Self.photoLibraryStatusPair()
         photoLibrary = photoPair.readWrite
         photoAddOnly = photoPair.addOnly
-        speechRecognition = Self.speechStatus()
     }
 
     // MARK: - Request (triggers system prompt)
@@ -117,11 +117,11 @@ final class PermissionsManager: ObservableObject {
         return photoAddOnly
     }
 
-    /// Request speech recognition (callback-based → wrap in continuation).
+    /// Request speech recognition. Returns new status after the prompt.
     func requestSpeechRecognition() async -> PermissionStatus {
-        let status: SFSpeechRecognizerAuthorizationStatus = await withCheckedContinuation { continuation in
-            SFSpeechRecognizer.requestAuthorization { newStatus in
-                continuation.resume(returning: newStatus)
+        let status = await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { authStatus in
+                continuation.resume(returning: authStatus)
             }
         }
         speechRecognition = Self.statusFromSpeech(status)
@@ -164,8 +164,9 @@ final class PermissionsManager: ObservableObject {
         return (Self.statusFromPHPhoto(rw), Self.statusFromPHPhoto(ao))
     }
 
-    static func speechStatus() -> PermissionStatus {
-        Self.statusFromSpeech(SFSpeechRecognizer.authorizationStatus())
+    static func speechRecognitionStatus() -> PermissionStatus {
+        let raw = SFSpeechRecognizer.authorizationStatus()
+        return Self.statusFromSpeech(raw)
     }
 
     private static func statusFromAV(_ raw: AVAuthorizationStatus) -> PermissionStatus {
