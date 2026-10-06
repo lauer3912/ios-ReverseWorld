@@ -13,6 +13,7 @@ struct ProfileView: View {
     @State private var showEditName = false
     @State private var showRestoreAlert = false
     @State private var restoreMessage = ""
+    @State private var showCredits = false
 
     // P9: Achievements now come from StatsManager (persisted)
     private var achievements: [Achievement] {
@@ -31,6 +32,7 @@ struct ProfileView: View {
                             statsRow
                             achievementsSection
                             premiumSection
+                            creditsSection
                             settingsSection
                             Text("ReverseWorldGo v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
                                 .font(.caption)
@@ -51,6 +53,7 @@ struct ProfileView: View {
                                 statsRow
                                 achievementsSection
                                 premiumSection
+                                creditsSection
                                 settingsSection
                                 Text("ReverseWorldGo v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
                                     .font(.caption)
@@ -64,6 +67,9 @@ struct ProfileView: View {
                     .navigationBarTitleDisplayMode(.inline)
                 }
             }
+        }
+        .sheet(isPresented: $showCredits) {
+            ReverseCreditsView()
         }
         .alert(L10n.profileEditNameTitle, isPresented: $showEditName) {
             TextField(L10n.profileNamePrompt, text: $username)
@@ -185,6 +191,40 @@ struct ProfileView: View {
                 }
             }
         )
+    }
+
+    private var creditsSection: some View {
+        Button {
+            showCredits = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.indigo)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Reverse Credits & Daily Flip Bonus")
+                        .font(.headline)
+                        .foregroundColor(Theme.Text.primary)
+
+                    Text("100 bonus credits + daily check-in")
+                        .font(.caption)
+                        .foregroundColor(Theme.Text.secondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(Theme.Text.secondary)
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Theme.Background.card)
+            )
+        }
+        .padding(.horizontal)
     }
 
     private var settingsSection: some View {
